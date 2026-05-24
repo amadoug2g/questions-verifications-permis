@@ -52,6 +52,56 @@ const scoreBoard = new ScoreBoard({
   onNewSession: () => { show('home'); scoreBoard.reset() },
 })
 
+// ─── Stepper (mobile navigation) ─────────────────────────────────────────
+
+function buildStepper(cards, container) {
+  let current = 0
+
+  const nav = document.createElement('div')
+  nav.className = 'stepper-nav'
+  nav.innerHTML = `
+    <button class="step-btn step-prev" aria-label="Question précédente">← Préc.</button>
+    <div class="step-dots">${cards.map((_, i) =>
+      `<span class="step-dot${i === 0 ? ' active' : ''}"></span>`
+    ).join('')}</div>
+    <button class="step-btn step-next" aria-label="Question suivante">Suiv. →</button>
+  `
+  container.insertBefore(nav, container.firstChild)
+
+  const dots  = nav.querySelectorAll('.step-dot')
+  const prev  = nav.querySelector('.step-prev')
+  const next  = nav.querySelector('.step-next')
+
+  function goto(i) {
+    cards[current].element.classList.remove('step-active')
+    dots[current].classList.remove('active')
+    current = i
+    cards[current].element.classList.add('step-active')
+    dots[current].classList.add('active')
+    prev.disabled = current === 0
+    next.disabled = current === cards.length - 1
+    cards[current].element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  prev.addEventListener('click', () => { if (current > 0) goto(current - 1) })
+  next.addEventListener('click', () => { if (current < cards.length - 1) goto(current + 1) })
+
+  // Swipe tactile
+  let touchX = 0
+  container.addEventListener('touchstart', e => { touchX = e.touches[0].clientX }, { passive: true })
+  container.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchX
+    if (Math.abs(dx) > 50) {
+      if (dx < 0 && current < cards.length - 1) goto(current + 1)
+      if (dx > 0 && current > 0) goto(current - 1)
+    }
+  }, { passive: true })
+
+  // Init
+  prev.disabled = true
+  cards.forEach((c, i) => c.element.classList.toggle('step-active', i === 0))
+}
+
 // ─── Session ──────────────────────────────────────────────────────────────
 
 function startSession(id) {
@@ -60,7 +110,6 @@ function startSession(id) {
   const container = document.getElementById('cards-container')
   container.innerHTML = ''
 
-  // Titre du scénario
   document.getElementById('scenario-num').textContent = scenario.id
   show('quiz')
   scoreBoard.reset()
@@ -71,7 +120,7 @@ function startSession(id) {
     { type: 'SEC',           question: scenario.q3, answer: scenario.a3, explain: scenario.explain3 },
   ]
 
-  questions.forEach((q, i) => {
+  const cards = questions.map((q, i) => {
     const card = new QuestionCard({
       ...q,
       index: i,
@@ -86,7 +135,10 @@ function startSession(id) {
       },
     })
     container.appendChild(card.element)
+    return card
   })
+
+  buildStepper(cards, container)
 }
 
 // ─── Paramètres ───────────────────────────────────────────────────────────
