@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Permis B — Questions dans la voiture</title>
+  <style>
+    /* ─── Reset & Variables ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f18;
+      --surface:  #161926;
+      --surface2: #1e2235;
+      --border:   #2a2f4a;
+      --border2:  #353c5e;
+      --text:     #e6e9f8;
+      --text2:    #9ca3c8;
+      --accent:   #6366f1;
+      --accent-h: #818cf8;
+      --ok:       #22c55e;
+      --ko:       #ef4444;
+      --warn:     #f59e0b;
+      --partial:  #a78bfa;
+      --radius:   14px;
+      --radius-sm:8px;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hidden { display: none !important; }
+
+
+    /* ─── Header ────────────────────────────────────────────────────── */
+    header {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 0;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-brand h1 {
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    .header-pill {
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+    }
+
+    #api-key-badge {
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: var(--warn);
+      color: #000;
+    }
+
+    #btn-settings {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+      font-size: .83rem;
+      font-weight: 500;
+      transition: color .15s, border-color .15s, background .15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #btn-settings:hover { color: var(--text); border-color: var(--accent); background: var(--surface2); }
+
+    /* ─── Screen wrapper ────────────────────────────────────────────── */
+    .screen {
+      width: 100%;
+      max-width: 700px;
+      padding: 28px 20px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+
+
+    /* ─── Home screen ───────────────────────────────────────────────── */
+    .home-hero {
+      text-align: center;
+      padding: 16px 0 8px;
+    }
+    .home-hero h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: 10px;
+    }
+    .home-hero p {
+      color: var(--text2);
+      font-size: .92rem;
+      line-height: 1.65;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ─── Odometer card ─────────────────────────────────────────────── */
+    .odo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .odo-label {
+      font-size: .82rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-weight: 600;
+    }
+
+    .odo-display {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      font-size: 2.6rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .04em;
+    }
+
+    .odo-digit {
+      background: #111520;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 52px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      transition: color .1s;
+    }
+
+    .odo-digit.active {
+      background: #1a1428;
+      border-color: var(--accent);
+      color: var(--accent-h);
+      box-shadow: 0 0 16px rgba(99,102,241,.25);
+    }
+
+    .odo-sep {
+      color: var(--border2);
+      font-size: 1.8rem;
+      margin: 0 2px;
+    }
+
+    .odo-caption {
+      font-size: .88rem;
+      color: var(--text2);
+    }
+    .odo-caption strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .odo-hint {
+      font-size: .78rem;
+      color: var(--text2);
+      text-align: center;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+
+    /* ─── Quiz screen ───────────────────────────────────────────────── */
+    .quiz-topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .back-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      font-size: .83rem;
+      transition: color .15s, border-color .15s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--border2); }
+
+    .quiz-scenario-tag {
+      font-size: .82rem;
+      color: var(--text2);
+    }
+    .quiz-scenario-tag strong {
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    /* ─── ScoreBoard ────────────────────────────────────────────────── */
+    .scoreboard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .sb-dots {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .sb-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      position: relative;
+      min-width: 44px;
+    }
+
+    .dot-ring {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--border2);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color .3s, background .3s;
+    }
+
+    .dot-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -62%);
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text2);
+      transition: color .3s;
+    }
+
+    .dot-label {
+      font-size: .68rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-weight: 600;
+    }
+
+    .sb-dot.dot-ok .dot-ring  { border-color: var(--ok); background: rgba(34,197,94,.12); }
+    .sb-dot.dot-ok .dot-value { color: var(--ok); }
+    .sb-dot.dot-ko .dot-ring  { border-color: var(--ko); background: rgba(239,68,68,.12); }
+    .sb-dot.dot-ko .dot-value { color: var(--ko); }
+
+    .sb-total {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      padding-left: 12px;
+      border-left: 1px solid var(--border);
+    }
+
+    /* Final result */
+    .sb-final {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .4s, transform .4s;
+    }
+    .sb-final.visible { opacity: 1; transform: translateY(0); }
+
+    .final-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .final-score {
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .final-denom {
+      font-size: 1.6rem;
+      color: var(--text2);
+      font-weight: 500;
+    }
+    .final-emoji { font-size: 2.2rem; }
+    .final-msg {
+      font-size: 1rem;
+      color: var(--text2);
+      font-weight: 500;
+    }
+    .final-stats {
+      font-size: .78rem;
+      color: var(--text2);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+
+    /* ─── Question Card ─────────────────────────────────────────────── */
+    .qcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .qcard.card-ok { border-color: rgba(34,197,94,.5);  box-shadow: 0 0 0 1px rgba(34,197,94,.15); }
+    .qcard.card-ko { border-color: rgba(239,68,68,.5);  box-shadow: 0 0 0 1px rgba(239,68,68,.15); }
+
+    .qcard-header {
+      background: var(--type-color, var(--accent));
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .qcard-type {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .type-badge {
+      background: rgba(0,0,0,.25);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: .08em;
+    }
+
+    .type-label {
+      color: rgba(255,255,255,.92);
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    .qcard-pts {
+      font-size: .75rem;
+      color: rgba(255,255,255,.7);
+      font-weight: 600;
+      background: rgba(0,0,0,.2);
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    .qcard-body {
+      padding: 22px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .photo-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: .82rem;
+      color: var(--accent-h);
+      background: rgba(99,102,241,.08);
+      border: 1px solid rgba(99,102,241,.25);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .photo-hint:hover { background: rgba(99,102,241,.16); }
+
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .q-textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: .92rem;
+      font-family: inherit;
+      padding: 12px 14px;
+      resize: none;
+      outline: none;
+      line-height: 1.55;
+      min-height: 70px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .q-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,.15); }
+    .q-textarea.shake {
+      animation: shake .4s ease;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+
+    .q-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+
+    /* ─── Buttons ───────────────────────────────────────────────────── */
+    .qbtn {
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 9px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: opacity .15s, transform .1s, background .15s;
+      white-space: nowrap;
+    }
+    .qbtn:active { transform: scale(.97); }
+    .qbtn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+    .qbtn-ai {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+    }
+    .qbtn-ai:not(:disabled):hover { opacity: .88; }
+
+    .qbtn-reveal {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+    }
+    .qbtn-reveal:not(:disabled):hover { color: var(--text); border-color: var(--text2); }
+
+    .qbtn-yes {
+      background: rgba(34,197,94,.15);
+      border: 1px solid rgba(34,197,94,.4);
+      color: var(--ok);
+      flex: 1;
+    }
+    .qbtn-yes:hover { background: rgba(34,197,94,.25); }
+
+    .qbtn-no {
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.35);
+      color: var(--ko);
+      flex: 1;
+    }
+    .qbtn-no:hover { background: rgba(239,68,68,.22); }
+
+    .qbtn-new {
+      background: var(--accent);
+      color: #fff;
+      width: 100%;
+      justify-content: center;
+      padding: 12px;
+      font-size: .92rem;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
+    .qbtn-new:hover { opacity: .88; }
+
+    /* Spinner */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .spinner-lg { width: 22px; height: 22px; border-width: 3px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Feedback blocks ───────────────────────────────────────────── */
+    .q-feedback {
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeIn .25s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+    .feedback-ok      { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.3); }
+    .feedback-partial { background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.3); }
+    .feedback-ko      { background: rgba(239,68,68,.1);  border: 1px solid rgba(239,68,68,.3); }
+    .feedback-reveal  { background: var(--surface2);     border: 1px solid var(--border2); }
+    .feedback-error   { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); }
+
+    .feedback-loading-wrap {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+    .feedback-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text2);
+      font-size: .88rem;
+    }
+    .feedback-loading .spinner { border-color: rgba(99,102,241,.3); border-top-color: var(--accent); }
+
+    .fb-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .fb-icon {
+      font-size: 1.2rem;
+      font-weight: 800;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .feedback-ok .fb-icon    { color: var(--ok); }
+    .feedback-partial .fb-icon { color: var(--partial); }
+    .feedback-ko .fb-icon    { color: var(--ko); }
+
+    .fb-label {
+      font-size: .82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .feedback-ok .fb-label    { color: var(--ok); }
+    .feedback-partial .fb-label { color: var(--partial); }
+    .feedback-ko .fb-label    { color: var(--ko); }
+
+    .fb-comment {
+      font-size: .9rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .fb-official {
+      background: rgba(0,0,0,.2);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .fb-official-label {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-weight: 700;
+      color: var(--text2);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .fb-official p {
+      font-size: .9rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .demo-badge {
+      font-size: .65rem;
+      background: rgba(245,158,11,.2);
+      color: var(--warn);
+      border: 1px solid rgba(245,158,11,.3);
+      padding: 1px 6px;
+      border-radius: 99px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .score-badge {
+      align-self: flex-end;
+      font-size: .78rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+    .score-ok { background: rgba(34,197,94,.2); color: var(--ok); border: 1px solid rgba(34,197,94,.3); }
+    .score-ko { background: rgba(239,68,68,.15); color: var(--ko); border: 1px solid rgba(239,68,68,.25); }
+
+    /* ─── Self-eval ─────────────────────────────────────────────────── */
+    .self-eval-prompt {
+      font-size: .8rem;
+      color: var(--text2);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .self-eval-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* ─── Explain block ─────────────────────────────────────────────── */
+    .q-explain {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .q-explain summary {
+      cursor: pointer;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      list-style: none;
+      transition: color .15s;
+    }
+    .q-explain summary:hover { color: var(--text); }
+    .q-explain summary::-webkit-details-marker { display: none; }
+    .q-explain[open] summary { color: var(--text); margin-bottom: 10px; }
+    .explain-body {
+      font-size: .88rem;
+      color: var(--text2);
+      line-height: 1.7;
+      padding-left: 4px;
+    }
+
+
+    /* ─── Settings screen ───────────────────────────────────────────── */
+    .settings-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .settings-card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .field label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+    .field input, .field select {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: .93rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      width: 100%;
+      font-family: inherit;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+    }
+    .field select option { background: var(--surface2); }
+    .field .hint {
+      font-size: .76rem;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .field .hint strong { color: var(--ok); }
+
+    .settings-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-top: 4px;
+    }
+
+    .btn-save {
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: .9rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      transition: opacity .15s;
+    }
+    .btn-save:hover { opacity: .88; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      font-size: .88rem;
+      font-weight: 500;
+      padding: 9px 18px;
+      transition: color .15s, border-color .15s;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--text2); }
+
+    .btn-danger {
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.3);
+      color: var(--ko);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 9px 16px;
+      margin-left: auto;
+      transition: background .15s;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+
+    /* ─── Responsive ─────────────────────────────────────────────────── */
+    @media (max-width: 520px) {
+      .odo-display { font-size: 2rem; }
+      .odo-digit   { width: 40px; height: 54px; }
+      .settings-card { padding: 20px 16px; }
+      .settings-actions { flex-direction: column; }
+      .btn-danger { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-brand">
+      <h1>Permis B</h1>
+      <span class="header-pill">Questions voiture</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="api-key-badge" class="hidden">Clé API manquante</span>
+      <button id="btn-settings">⚙ Paramètres</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ ÉCRAN 1 — Accueil ════════════════════════ -->
+  <div id="screen-home" class="screen">
+
+    <div class="home-hero">
+      <h2>Questions dans la voiture</h2>
+      <p>
+        Simule l'épreuve pratique : l'examinateur tire un scénario via les
+        deux derniers chiffres du compteur. Réponds aux 3 questions
+        (1 point chacune) pour t'entraîner.
+      </p>
+    </div>
+
+    <div id="odo-container"></div>
+
+  </div>
+
+  <!-- ═══════════════════════ ÉCRAN 2 — Quiz ═══════════════════════════ -->
+  <div id="screen-quiz" class="screen hidden">
+
+    <div class="quiz-topbar">
+      <button class="back-btn" id="btn-back">← Accueil</button>
+      <span class="quiz-scenario-tag">Scénario <strong id="scenario-num">–</strong></span>
+    </div>
+
+    <div id="score-container"></div>
+
+    <div id="cards-container"></div>
+
+  </div>
+
+  <!-- ══════════════════════ ÉCRAN 3 — Paramètres ══════════════════════ -->
+  <div id="screen-settings" class="screen hidden">
+
+    <div class="settings-card">
+      <h2>Configuration IA</h2>
+
+      <div class="field">
+        <label for="select-provider">Fournisseur</label>
+        <select id="select-provider">
+          <option value="anthropic">Anthropic — Claude</option>
+          <option value="openai">OpenAI — GPT</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="input-api-key">Clé API</label>
+        <input
+          type="password"
+          id="input-api-key"
+          placeholder="sk-ant-…   ou   sk-…"
+          autocomplete="off"
+        />
+        <span class="hint">
+          Stockée <strong>uniquement dans ton navigateur</strong> (localStorage).
+          Elle n'est jamais envoyée à un serveur tiers — elle va directement à l'API choisie.
+          Sans clé, l'évaluation fonctionne en mode démo simulé.
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="input-model">Modèle (optionnel)</label>
+        <input
+          type="text"
+          id="input-model"
+          placeholder="Laisser vide pour le modèle par défaut"
+        />
+      </div>
+
+      <div class="settings-actions">
+        <button id="btn-save-settings" class="btn-save">Enregistrer</button>
+        <button id="btn-cancel-settings" class="btn-ghost">Annuler</button>
+        <button id="btn-reset-stats" class="btn-danger">Effacer l'historique</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
