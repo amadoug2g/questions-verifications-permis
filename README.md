@@ -1,4 +1,4 @@
-# Questions de vérification — Permis B
+# Questions de vérification - Permis B
 
 > Comprends le mécanisme, entraîne-toi sur les 100 scénarios. Zéro compte, zéro installation, zéro friction.
 
