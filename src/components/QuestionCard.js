@@ -108,6 +108,7 @@ export class QuestionCard {
     this._selfEval.classList.remove('hidden')
     this._btnReveal.disabled = true
     this._btnReveal.querySelector('.btn-label').textContent = 'Réponse affichée'
+    this.element.querySelector('.q-explain')?.setAttribute('open', '')
   }
 
   async _aiEval() {
@@ -179,6 +180,7 @@ export class QuestionCard {
       </div>
     `
     this._feedback.classList.remove('hidden')
+    this.element.querySelector('.q-explain')?.setAttribute('open', '')
   }
 
   _showOfficialAnswer() {
