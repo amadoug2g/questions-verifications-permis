@@ -1,0 +1,13 @@
+name = "permis-verif"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# ── Assets statiques (build Vite) ─────────────────────────────────────────
+[assets]
+directory = "./dist"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
+
+# ── Binding Workers AI (gratuit, 10k neurons/jour) ────────────────────────
+[ai]
+binding = "AI"

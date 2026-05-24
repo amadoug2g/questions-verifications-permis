@@ -1,7 +1,12 @@
 /**
- * LLMService — abstraction pour les appels API LLM.
- * Supporte Anthropic (défaut) et OpenAI.
- * Pour ajouter un fournisseur : implémenter une nouvelle méthode _call<Provider>().
+ * LLMService — abstraction pour les appels LLM.
+ *
+ * Providers disponibles :
+ *   'cloudflare' → appelle /api/evaluate sur le Worker (Workers AI, 100% gratuit)
+ *   'anthropic'  → appelle l'API Anthropic directement (clé requise)
+ *   'openai'     → appelle l'API OpenAI directement (clé requise)
+ *
+ * Si aucun provider n'est disponible → mode mock automatique (démo).
  */
 
 // ─── Réponses simulées pour le mode démo ──────────────────────────────────
@@ -24,7 +29,7 @@ const MOCK_POOL = {
   ],
 }
 
-const PROVIDERS = {
+const DIRECT_PROVIDERS = {
   anthropic: {
     url: 'https://api.anthropic.com/v1/messages',
     defaultModel: 'claude-haiku-4-5-20251001',
@@ -36,36 +41,69 @@ const PROVIDERS = {
 }
 
 export class LLMService {
-  constructor({ provider = 'anthropic', apiKey, model, mock = false } = {}) {
+  /**
+   * @param {Object} opts
+   * @param {string}  [opts.provider='cloudflare']  'cloudflare' | 'anthropic' | 'openai'
+   * @param {string}  [opts.apiKey]                 Clé API (uniquement pour anthropic/openai)
+   * @param {string}  [opts.model]                  Modèle override
+   * @param {boolean} [opts.mock=false]              Force le mode démo
+   */
+  constructor({ provider = 'cloudflare', apiKey, model, mock = false } = {}) {
     this.provider = provider
     this.apiKey = apiKey
-    this.model = model || PROVIDERS[provider]?.defaultModel
-    this.mock = mock || !apiKey
+    this.model = model || DIRECT_PROVIDERS[provider]?.defaultModel
+    // mock si forcé, ou si provider direct sans clé
+    this.mock = mock || (provider !== 'cloudflare' && !apiKey)
   }
 
   /** Évalue la réponse d'un candidat pour une question donnée. */
   async evaluate({ question, officialAnswer, userAnswer, context = '' }) {
-    const prompt = buildEvalPrompt({ question, officialAnswer, userAnswer, context })
-    const raw = await this._complete(prompt)
+    const raw = await this._complete({ question, officialAnswer, userAnswer, context })
     return parseEvalResponse(raw)
   }
 
   /** Génère une explication pédagogique approfondie. */
   async explain({ question, officialAnswer, topic }) {
     const prompt = buildExplainPrompt({ question, officialAnswer, topic })
-    const raw = await this._complete(prompt)
+    const raw = await this._completeRaw(prompt)
     return raw.trim()
   }
 
-  /** Appel générique — délègue au bon fournisseur (ou au mock). */
-  async _complete(userMessage) {
+  /** Délègue au bon provider. */
+  async _complete(evalParams) {
+    if (this.mock) return this._callMock()
+    if (this.provider === 'cloudflare') return this._callCloudflare(evalParams)
+    // Providers directs : construire le prompt texte
+    const prompt = buildEvalPrompt(evalParams)
+    return this._completeRaw(prompt)
+  }
+
+  /** Appel texte générique (pour anthropic/openai). */
+  async _completeRaw(userMessage) {
     if (this.mock) return this._callMock()
     if (this.provider === 'anthropic') return this._callAnthropic(userMessage)
     if (this.provider === 'openai') return this._callOpenAI(userMessage)
-    throw new Error(`Fournisseur inconnu : ${this.provider}`)
+    throw new Error(`Provider inconnu : ${this.provider}`)
   }
 
-  /** Mode démo : simule un délai de réflexion et retourne un feedback réaliste. */
+  // ── Provider Cloudflare Workers AI (via /api/evaluate) ──────────────────
+
+  async _callCloudflare({ question, officialAnswer, userAnswer, context = '' }) {
+    const res = await fetch('/api/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, officialAnswer, userAnswer, context }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err?.error || `Erreur Worker ${res.status}`)
+    }
+    const data = await res.json()
+    return data.text || ''
+  }
+
+  // ── Mode démo ───────────────────────────────────────────────────────────
+
   async _callMock() {
     await new Promise(r => setTimeout(r, 1200 + Math.random() * 900))
     const r = Math.random()
@@ -79,8 +117,10 @@ export class LLMService {
     return JSON.stringify({ score, label, comment, demo: true })
   }
 
+  // ── Provider Anthropic ──────────────────────────────────────────────────
+
   async _callAnthropic(userMessage) {
-    const res = await fetch(PROVIDERS.anthropic.url, {
+    const res = await fetch(DIRECT_PROVIDERS.anthropic.url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -102,8 +142,10 @@ export class LLMService {
     return data.content?.[0]?.text || ''
   }
 
+  // ── Provider OpenAI ─────────────────────────────────────────────────────
+
   async _callOpenAI(userMessage) {
-    const res = await fetch(PROVIDERS.openai.url, {
+    const res = await fetch(DIRECT_PROVIDERS.openai.url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,8 +176,7 @@ Question posée au candidat :
 
 Réponse officielle attendue :
 "${officialAnswer}"
-
-${context ? `Contexte pédagogique : ${context}\n` : ''}
+${context ? `\nContexte pédagogique : ${context}\n` : ''}
 Réponse du candidat :
 "${userAnswer}"
 
@@ -168,18 +209,17 @@ function parseEvalResponse(raw) {
     if (!match) throw new Error('Pas de JSON trouvé')
     const parsed = JSON.parse(match[0])
     return {
-      score: Number(parsed.score) === 1 ? 1 : 0,
-      label: parsed.label || 'Incorrect',
+      score:   Number(parsed.score) === 1 ? 1 : 0,
+      label:   parsed.label   || 'Incorrect',
       comment: parsed.comment || '',
-      demo: !!parsed.demo,
+      demo:    !!parsed.demo,
     }
   } catch {
-    // Fallback si le LLM ne renvoie pas du JSON propre
     const lower = raw.toLowerCase()
     const isOk = lower.includes('correct') && !lower.includes('incorrect')
     return {
-      score: isOk ? 1 : 0,
-      label: isOk ? 'Correct' : 'Incorrect',
+      score:   isOk ? 1 : 0,
+      label:   isOk ? 'Correct' : 'Incorrect',
       comment: raw.slice(0, 200),
     }
   }

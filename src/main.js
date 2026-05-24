@@ -28,10 +28,16 @@ const show = (name) => {
 const engine = new QuizEngine()
 
 const getLLM = () => {
+  // En production (Cloudflare), on passe par /api/evaluate — gratuit, sans clé.
+  const isDeployed = !['localhost', '127.0.0.1'].includes(window.location.hostname)
+  if (isDeployed) {
+    return new LLMService({ provider: 'cloudflare' })
+  }
+  // En local : clé API si configurée, sinon mode démo automatique.
   const key = storage.getApiKey()
   return new LLMService({
     provider: storage.getProvider(),
-    apiKey: key || '',      // mock automatique si vide
+    apiKey: key || '',
     model: storage.getModel() || undefined,
   })
 }
