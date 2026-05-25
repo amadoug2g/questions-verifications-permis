@@ -52,6 +52,28 @@ Chaque scénario comporte exactement trois questions, dans cet ordre :
 
 Les mauvaises réponses **ne sont pas éliminatoires**. Chaque bonne réponse vaut **1 point**, pour un total de **3 points** qui s'ajoutent aux 20 points de la phase de conduite.
 
+## Tests
+
+```bash
+npm test
+```
+
+### Philosophie TDD
+
+`src/data/scenarios.js` est la source de données principale de l'app. Toute modification de ce fichier — correction, ajout de scénario, reformulation — doit passer les tests avant merge. Les tests sont la garde-fou contre les régressions silencieuses et les hallucinations introduites lors d'éditions assistées par IA.
+
+### Couches de tests
+
+| Couche | Ce qu'elle vérifie |
+|--------|-------------------|
+| **1 — Structurelle** | Format des champs (id à 2 chiffres, type1 VI/VE, parité pair→VE/impair→VI, champs q/a non vides, photo au bon format) |
+| **2 — PDF source de vérité** | Les questions (q1/q2/q3) correspondent au PDF officiel DSR/BRPCE (janvier 2018) — fuzzy match à 65% des mots significatifs |
+| **3 — Anti-hallucination** | Les `explain` font moins de 250 caractères et ne contiennent pas de termes de la blocklist (ex : `"courroie de distribution"`) |
+| **4 — Régressions connues** | Assertions explicites sur des scénarios déjà corrigés — ex : scénario 28 ne doit pas contenir "courroie" |
+| **5 — Smoke tests** | 40 scénarios présents, `getScenarioById("01")` fonctionne, `getScenarioById("99")` retourne null |
+
+Le fichier source de vérité PDF est stocké dans `tests/fixtures/pdf-source.txt`.
+
 ## Pile technique
 
 | Couche | Choix | Raison |
