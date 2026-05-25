@@ -128,6 +128,7 @@ export class QuestionCard {
         officialAnswer: this.answer,
         userAnswer,
         context:        this.explain || '',
+        requiredCount:  this.requiredCount ?? null,
       })
       this._showAIResult(result)
       this._score(result.score)
@@ -207,13 +208,11 @@ export class QuestionCard {
     this._btnAI.disabled     = true
     this._btnReveal.disabled = true
 
-    // Ajouter un badge de score dans le feedback
     const badge = document.createElement('div')
     badge.className = `score-badge ${value === 1 ? 'score-ok' : 'score-ko'}`
     badge.textContent = value === 1 ? '+1 point' : '0 point'
     this._feedback.appendChild(badge)
 
-    // Bordure de la carte selon le résultat
     this.element.classList.add(value === 1 ? 'card-ok' : 'card-ko')
 
     this.onScore?.(this.index, value)

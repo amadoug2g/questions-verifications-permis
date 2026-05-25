@@ -1,6 +1,6 @@
 /**
  * worker.js — Cloudflare Worker
- * Route /api/evaluate → Workers AI (Llama 3.1 8B, gratuit)
+ * Route /api/evaluate → Workers AI (Llama 3.3 70B fp8-fast, gratuit)
  * Tout le reste → assets statiques (build Vite dans /dist)
  */
 
@@ -28,13 +28,13 @@ export default {
 async function handleEvaluate(request, env) {
   try {
     const body = await request.json()
-    const { question, officialAnswer, userAnswer, context = '' } = body
+    const { question, officialAnswer, userAnswer, context = '', requiredCount = null } = body
 
     if (!question || !officialAnswer || !userAnswer) {
       return corsResponse({ error: 'Paramètres manquants' }, 400)
     }
 
-    const prompt = buildEvalPrompt({ question, officialAnswer, userAnswer, context })
+    const prompt = buildEvalPrompt({ question, officialAnswer, userAnswer, context, requiredCount })
 
     const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
       messages: [
@@ -59,13 +59,19 @@ async function handleEvaluate(request, env) {
 
 // ─── Prompt ───────────────────────────────────────────────────────────────
 
-function buildEvalPrompt({ question, officialAnswer, userAnswer, context }) {
+function buildEvalPrompt({ question, officialAnswer, userAnswer, context, requiredCount = null }) {
+  const countRule = requiredCount
+    ? `\nCONSIGNE DE QUANTITÉ : La question demande exactement ${requiredCount} élément(s). ` +
+      `Si le candidat en fournit ${requiredCount} qui sont corrects (même parmi plusieurs possibles), ` +
+      `c'est score 1 "Correct". Ne jamais pénaliser pour ne pas avoir listé les autres options.\n`
+    : ''
+
   return `Question posée au candidat :
 "${question}"
 
 Réponse officielle attendue :
 "${officialAnswer}"
-${context ? `\nContexte pédagogique : ${context}\n` : ''}
+${context ? `\nContexte pédagogique : ${context}\n` : ''}${countRule}
 Réponse du candidat :
 "${userAnswer}"
 
@@ -79,7 +85,8 @@ ou
 Règles :
 - score 1 si le fond est juste (même si formulation imparfaite)
 - label "Partiel" si réponse incomplète mais pas fausse
-- comment : 1-2 phrases en français, pédagogiques et bienveillantes`
+- comment : 1-2 phrases en français, pédagogiques et bienveillants
+- RÈGLE ABSOLUE : si label = "Correct", le comment ne doit pas contenir "mais", "cependant" ni suggestion de compléter`
 }
 
 // ─── Helpers CORS ─────────────────────────────────────────────────────────
