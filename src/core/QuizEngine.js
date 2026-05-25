@@ -13,11 +13,11 @@ export class QuizEngine extends EventTarget {
     this.scores = [null, null, null] // null | 0 | 1 pour chaque question
   }
 
-  /** Tire un scénario aléatoire (simule les 2 derniers chiffres du compteur). */
+  /** Tire un scénario aléatoire parmi les scénarios disponibles. */
   roll() {
-    const num = Math.floor(Math.random() * 100)
-    const id = String(num).padStart(2, '0')
-    this.scenario = SCENARIOS.find(s => s.id === id) || SCENARIOS[0]
+    const available = SCENARIOS.map(s => s.id)
+    const id = available[Math.floor(Math.random() * available.length)]
+    this.scenario = SCENARIOS.find(s => s.id === id)
     this.scores = [null, null, null]
     this.dispatch('scenario-changed', { scenario: this.scenario })
     return this.scenario

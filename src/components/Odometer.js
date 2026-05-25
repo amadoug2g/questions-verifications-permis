@@ -3,6 +3,8 @@
  * Anime les 2 derniers chiffres, les autres restent fixes.
  */
 
+import { SCENARIOS } from '../data/scenarios.js'
+
 export class Odometer {
   constructor({ container, onRoll }) {
     this.container = container
@@ -31,6 +33,7 @@ export class Odometer {
           <span class="btn-label">Simuler le compteur</span>
         </button>
         <p class="odo-hint">L'examinateur utilise les 2 derniers chiffres du compteur pour choisir le scénario.</p>
+        <p class="odo-coverage">${SCENARIOS.length} scénarios disponibles sur 100 — les autres seront ajoutés progressivement.</p>
       </div>
     `
     this.container.querySelector('#btn-roll').addEventListener('click', () => this.roll())
@@ -42,7 +45,9 @@ export class Odometer {
     const btn = this.container.querySelector('#btn-roll')
     btn.disabled = true
 
-    const target = Math.floor(Math.random() * 100)
+    const available = SCENARIOS.map(s => s.id)
+    const pickedId = available[Math.floor(Math.random() * available.length)]
+    const target = parseInt(pickedId, 10)
     const tens = Math.floor(target / 10)
     const units = target % 10
 
