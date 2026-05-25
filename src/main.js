@@ -49,7 +49,7 @@ const odometer = new Odometer({
 
 const scoreBoard = new ScoreBoard({
   container: document.getElementById('score-container'),
-  onNewSession: () => { show('home'); scoreBoard.reset() },
+  onNewSession: () => { show('home'); scoreBoard.reset(); hideStickyScoreBar() },
 })
 
 // ─── Stepper (mobile navigation) ─────────────────────────────────────────
@@ -61,23 +61,20 @@ function buildStepper(cards, container) {
   nav.className = 'stepper-nav'
   nav.innerHTML = `
     <button class="step-btn step-prev" aria-label="Question précédente">← Préc.</button>
-    <div class="step-dots">${cards.map((_, i) =>
-      `<span class="step-dot${i === 0 ? ' active' : ''}"></span>`
-    ).join('')}</div>
+    <span class="step-counter">Question <strong>1</strong>/${cards.length}</span>
     <button class="step-btn step-next" aria-label="Question suivante">Suiv. →</button>
   `
   container.insertBefore(nav, container.firstChild)
 
-  const dots  = nav.querySelectorAll('.step-dot')
+  const stepCounter = nav.querySelector('.step-counter strong')
   const prev  = nav.querySelector('.step-prev')
   const next  = nav.querySelector('.step-next')
 
   function goto(i) {
     cards[current].element.classList.remove('step-active')
-    dots[current].classList.remove('active')
     current = i
     cards[current].element.classList.add('step-active')
-    dots[current].classList.add('active')
+    stepCounter.textContent = current + 1
     prev.disabled = current === 0
     next.disabled = current === cards.length - 1
     cards[current].element.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -102,6 +99,33 @@ function buildStepper(cards, container) {
   cards.forEach((c, i) => c.element.classList.toggle('step-active', i === 0))
 }
 
+// ─── Sticky score bar ─────────────────────────────────────────────────────
+
+function initStickyScoreBar(scenarioId) {
+  const bar = document.getElementById('sticky-score-bar')
+  const numEl = document.getElementById('sticky-scenario-num')
+  if (!bar || !numEl) return
+  numEl.textContent = scenarioId
+  bar.classList.add('visible')
+  // Reset dots
+  for (let i = 0; i < 3; i++) {
+    const dot = document.getElementById(`sticky-dot-${i}`)
+    if (dot) { dot.classList.remove('dot-ok', 'dot-ko') }
+  }
+}
+
+function updateStickyDot(index, value) {
+  const dot = document.getElementById(`sticky-dot-${index}`)
+  if (!dot) return
+  dot.classList.remove('dot-ok', 'dot-ko')
+  dot.classList.add(value >= 1 ? 'dot-ok' : 'dot-ko')
+}
+
+function hideStickyScoreBar() {
+  const bar = document.getElementById('sticky-score-bar')
+  if (bar) bar.classList.remove('visible')
+}
+
 // ─── Session ──────────────────────────────────────────────────────────────
 
 function startSession(id) {
@@ -113,6 +137,7 @@ function startSession(id) {
   document.getElementById('scenario-num').textContent = scenario.id
   show('quiz')
   scoreBoard.reset()
+  initStickyScoreBar(scenario.id)
 
   const questions = [
     { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1 },
@@ -128,6 +153,7 @@ function startSession(id) {
       onScore: (index, value) => {
         engine.setScore(index, value)
         scoreBoard.update(index, value)
+        updateStickyDot(index, value)
         if (engine.isComplete) {
           const stats = storage.addSession(engine.total)
           scoreBoard.showFinal(engine.total, stats)
@@ -159,7 +185,7 @@ document.getElementById('btn-save-settings')?.addEventListener('click', () => {
 
 document.getElementById('btn-cancel-settings')?.addEventListener('click', () => show('home'))
 
-document.getElementById('btn-back')?.addEventListener('click', () => show('home'))
+document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
 
 document.getElementById('btn-reset-stats')?.addEventListener('click', () => {
   if (confirm('Effacer tout l\'historique de scores ?')) {
