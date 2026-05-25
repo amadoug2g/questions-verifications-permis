@@ -60,26 +60,31 @@ async function handleEvaluate(request, env) {
 // ─── Prompt ───────────────────────────────────────────────────────────────
 
 function buildEvalPrompt({ question, officialAnswer, userAnswer, context }) {
-  return `Question posée au candidat :
+  return `Évalue si la réponse du candidat couvre les points essentiels de la réponse officielle.
+
+Question :
 "${question}"
 
-Réponse officielle attendue :
+Réponse officielle :
 "${officialAnswer}"
-${context ? `\nContexte pédagogique : ${context}\n` : ''}
+${context ? `\nContexte : ${context}\n` : ''}
 Réponse du candidat :
 "${userAnswer}"
 
-Évalue si la réponse est correcte. Réponds UNIQUEMENT en JSON valide :
-{"score": 1, "label": "Correct", "comment": "..."}
-ou
-{"score": 0, "label": "Partiel", "comment": "..."}
-ou
-{"score": 0, "label": "Incorrect", "comment": "..."}
+RÈGLES :
+1. Ignore orthographe, style et ordre des mots — seul le fond compte.
+2. label "Correct" (score 1) : tous les éléments essentiels sont présents.
+3. label "Partiel" (score 0) : des éléments essentiels sont présents mais d'autres manquent.
+4. label "Incorrect" (score 0) : réponse fausse ou hors-sujet.
 
-Règles :
-- score 1 si le fond est juste (même si formulation imparfaite)
-- label "Partiel" si réponse incomplète mais pas fausse
-- comment : 1-2 phrases en français, pédagogiques et bienveillantes`
+RÈGLE ABSOLUE : si label = "Correct", le comment doit être affirmatif SANS "mais", "cependant", "toutefois" ni suggestion de compléter. Si tu ressens le besoin d'ajouter un "mais", utilise "Partiel" à la place.
+
+Réponds UNIQUEMENT en JSON valide, un seul objet, sans texte autour :
+{"score": 1, "label": "Correct", "comment": "Bonne réponse — [confirmation courte du point clé]."}
+ou
+{"score": 0, "label": "Partiel", "comment": "Il manque [élément précis]. La réponse complète inclut aussi [complément]."}
+ou
+{"score": 0, "label": "Incorrect", "comment": "La réponse attendue est : [point clé]. [Explication en 1 phrase pourquoi c'est important.]"}`
 }
 
 // ─── Helpers CORS ─────────────────────────────────────────────────────────
