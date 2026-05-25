@@ -109,7 +109,7 @@ export class LLMService {
     const r = Math.random()
     let category, score
     if (r < 0.45)      { category = 'correct';   score = 1 }
-    else if (r < 0.75) { category = 'partial';   score = 1 }
+    else if (r < 0.75) { category = 'partial';   score = 0 }
     else               { category = 'incorrect'; score = 0 }
     const pool = MOCK_POOL[category]
     const comment = pool[Math.floor(Math.random() * pool.length)]
@@ -169,26 +169,31 @@ export class LLMService {
 // ─── Constructeurs de prompts ──────────────────────────────────────────────
 
 function buildEvalPrompt({ question, officialAnswer, userAnswer, context }) {
-  return `Tu es un examinateur bienveillant du permis de conduire français.
+  return `Évalue si la réponse du candidat couvre les points essentiels de la réponse officielle au permis de conduire français.
 
-Question posée au candidat :
+Question :
 "${question}"
 
-Réponse officielle attendue :
+Réponse officielle :
 "${officialAnswer}"
-${context ? `\nContexte pédagogique : ${context}\n` : ''}
+${context ? `\nContexte : ${context}\n` : ''}
 Réponse du candidat :
 "${userAnswer}"
 
-Évalue si la réponse du candidat est correcte.
-Réponds UNIQUEMENT en JSON valide, sans texte autour :
-{
-  "score": 1 ou 0,
-  "label": "Correct" | "Partiel" | "Incorrect",
-  "comment": "feedback court et pédagogique (1-2 phrases max)"
-}
+RÈGLES :
+1. Ignore orthographe, style et ordre — seul le fond compte.
+2. label "Correct" (score 1) : tous les éléments essentiels sont présents.
+3. label "Partiel" (score 0) : certains éléments essentiels présents, d'autres manquent.
+4. label "Incorrect" (score 0) : réponse fausse ou hors-sujet.
 
-Sois indulgent sur la formulation si le fond est juste. Score 1 = réponse correcte ou partiellement correcte.`
+RÈGLE ABSOLUE : si label = "Correct", le comment doit être affirmatif SANS "mais", "cependant" ni suggestion de compléter. Si tu ressens le besoin d'ajouter un "mais", utilise "Partiel" à la place.
+
+Réponds UNIQUEMENT en JSON valide, sans texte autour :
+{"score": 1, "label": "Correct", "comment": "Bonne réponse — [confirmation courte du point clé]."}
+ou
+{"score": 0, "label": "Partiel", "comment": "Il manque [élément précis]. La réponse complète inclut aussi [complément]."}
+ou
+{"score": 0, "label": "Incorrect", "comment": "La réponse attendue est : [point clé]. [Explication courte pourquoi c'est important.]"}`
 }
 
 function buildExplainPrompt({ question, officialAnswer, topic }) {
@@ -203,9 +208,11 @@ En 3-4 phrases maximum : explique le pourquoi concret, avec une analogie ou un c
 
 // ─── Parseur de réponse ────────────────────────────────────────────────────
 
-function parseEvalResponse(raw) {
+export function parseEvalResponse(raw) {
+  // Guard: 70B model may return null/undefined/object instead of string
+  const str = typeof raw === 'string' ? raw : (raw == null ? '' : JSON.stringify(raw))
   try {
-    const match = raw.match(/\{[\s\S]*\}/)
+    const match = str.match(/\{[\s\S]*\}/)
     if (!match) throw new Error('Pas de JSON trouvé')
     const parsed = JSON.parse(match[0])
     return {
@@ -215,12 +222,12 @@ function parseEvalResponse(raw) {
       demo:    !!parsed.demo,
     }
   } catch {
-    const lower = raw.toLowerCase()
+    const lower = str.toLowerCase()
     const isOk = lower.includes('correct') && !lower.includes('incorrect')
     return {
       score:   isOk ? 1 : 0,
       label:   isOk ? 'Correct' : 'Incorrect',
-      comment: raw.slice(0, 200),
+      comment: str.slice(0, 200),
     }
   }
 }
