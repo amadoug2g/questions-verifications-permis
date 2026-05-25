@@ -28,15 +28,15 @@ export default {
 async function handleEvaluate(request, env) {
   try {
     const body = await request.json()
-    const { question, officialAnswer, userAnswer, context = '' } = body
+    const { question, officialAnswer, userAnswer, context = '', requiredCount = null } = body
 
     if (!question || !officialAnswer || !userAnswer) {
       return corsResponse({ error: 'Paramètres manquants' }, 400)
     }
 
-    const prompt = buildEvalPrompt({ question, officialAnswer, userAnswer, context })
+    const prompt = buildEvalPrompt({ question, officialAnswer, userAnswer, context, requiredCount })
 
-    const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+    const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
       messages: [
         {
           role: 'system',
@@ -59,32 +59,34 @@ async function handleEvaluate(request, env) {
 
 // ─── Prompt ───────────────────────────────────────────────────────────────
 
-function buildEvalPrompt({ question, officialAnswer, userAnswer, context }) {
-  return `Évalue si la réponse du candidat couvre les points essentiels de la réponse officielle.
+function buildEvalPrompt({ question, officialAnswer, userAnswer, context, requiredCount = null }) {
+  const countRule = requiredCount
+    ? `\nCONSIGNE DE QUANTITÉ : La question demande exactement ${requiredCount} élément(s). ` +
+      `Si le candidat en fournit ${requiredCount} qui sont corrects (même parmi plusieurs possibles), ` +
+      `c'est score 1 "Correct". Ne jamais pénaliser pour ne pas avoir listé les autres options.\n`
+    : ''
 
-Question :
+  return `Question posée au candidat :
 "${question}"
 
-Réponse officielle :
+Réponse officielle attendue :
 "${officialAnswer}"
-${context ? `\nContexte : ${context}\n` : ''}
+${context ? `\nContexte pédagogique : ${context}\n` : ''}${countRule}
 Réponse du candidat :
 "${userAnswer}"
 
-RÈGLES :
-1. Ignore orthographe, style et ordre des mots — seul le fond compte.
-2. label "Correct" (score 1) : tous les éléments essentiels sont présents.
-3. label "Partiel" (score 0) : des éléments essentiels sont présents mais d'autres manquent.
-4. label "Incorrect" (score 0) : réponse fausse ou hors-sujet.
-
-RÈGLE ABSOLUE : si label = "Correct", le comment doit être affirmatif SANS "mais", "cependant", "toutefois" ni suggestion de compléter. Si tu ressens le besoin d'ajouter un "mais", utilise "Partiel" à la place.
-
-Réponds UNIQUEMENT en JSON valide, un seul objet, sans texte autour :
-{"score": 1, "label": "Correct", "comment": "Bonne réponse — [confirmation courte du point clé]."}
+Évalue si la réponse est correcte. Réponds UNIQUEMENT en JSON valide :
+{"score": 1, "label": "Correct", "comment": "..."}
 ou
-{"score": 0, "label": "Partiel", "comment": "Il manque [élément précis]. La réponse complète inclut aussi [complément]."}
+{"score": 0, "label": "Partiel", "comment": "..."}
 ou
-{"score": 0, "label": "Incorrect", "comment": "La réponse attendue est : [point clé]. [Explication en 1 phrase pourquoi c'est important.]"}`
+{"score": 0, "label": "Incorrect", "comment": "..."}
+
+Règles :
+- score 1 si le fond est juste (même si formulation imparfaite)
+- label "Partiel" si réponse incomplète mais pas fausse
+- comment : 1-2 phrases en français, pédagogiques et bienveillants
+- RÈGLE ABSOLUE : si label = "Correct", le comment ne doit pas contenir "mais", "cependant" ni suggestion de compléter`
 }
 
 // ─── Helpers CORS ─────────────────────────────────────────────────────────

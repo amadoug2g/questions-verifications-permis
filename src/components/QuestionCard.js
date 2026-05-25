@@ -128,6 +128,7 @@ export class QuestionCard {
         officialAnswer: this.answer,
         userAnswer,
         context:        this.explain || '',
+        requiredCount:  this.requiredCount ?? null,
       })
       this._showAIResult(result)
       this._score(result.score)
