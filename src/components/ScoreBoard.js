@@ -5,9 +5,10 @@
 const LABELS = ['Q1', 'Q2', 'Q3']
 
 export class ScoreBoard {
-  constructor({ container, onNewSession }) {
-    this.container   = container
-    this.onNewSession = onNewSession
+  constructor({ container, onNewSession, onNextScenario }) {
+    this.container      = container
+    this.onNewSession   = onNewSession
+    this.onNextScenario = onNextScenario
     this.scores      = [null, null, null]
     this._render()
   }
@@ -73,10 +74,17 @@ export class ScoreBoard {
         <span>·</span>
         <span>${pct}% de réussite</span>
       </div>
-      <button class="qbtn qbtn-new" id="btn-new-session">
-        ↩ Nouveau scénario
-      </button>
+      <div class="sb-actions">
+        <button class="qbtn qbtn-next" id="btn-next-scenario">
+          → Scénario suivant
+        </button>
+        <button class="qbtn qbtn-home" id="btn-new-session">
+          ↩ Accueil
+        </button>
+      </div>
     `
+    div.querySelector('#btn-next-scenario')
+      .addEventListener('click', () => this.onNextScenario?.())
     div.querySelector('#btn-new-session')
       .addEventListener('click', () => this.onNewSession?.())
 

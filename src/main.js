@@ -35,7 +35,8 @@ const odometer = new Odometer({
 
 const scoreBoard = new ScoreBoard({
   container: document.getElementById('score-container'),
-  onNewSession: () => { show('home'); scoreBoard.reset(); hideStickyScoreBar() },
+  onNewSession:   () => { show('home'); scoreBoard.reset(); hideStickyScoreBar() },
+  onNextScenario: () => { const s = engine.roll(); startSession(s.id) },
 })
 
 // ─── Stepper (mobile navigation) ─────────────────────────────────────────

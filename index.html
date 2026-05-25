@@ -375,6 +375,36 @@
       align-items: center;
     }
 
+    .sb-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .qbtn-next {
+      background: var(--accent);
+      color: #fff;
+      flex: 1;
+      justify-content: center;
+      padding: 12px;
+      font-size: .92rem;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
+    .qbtn-next:hover { opacity: .88; }
+
+    .qbtn-home {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      justify-content: center;
+      padding: 12px 18px;
+      font-size: .88rem;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
+    .qbtn-home:hover { color: var(--text); border-color: var(--text2); }
+
 
     /* ─── Question Card ──────────────────────────────────────────────────────── */
     .qcard {
@@ -535,18 +565,6 @@
       flex: 1;
     }
     .qbtn-no:hover { background: rgba(239,68,68,.22); }
-
-    .qbtn-new {
-      background: var(--accent);
-      color: #fff;
-      width: 100%;
-      justify-content: center;
-      padding: 12px;
-      font-size: .92rem;
-      border-radius: 10px;
-      margin-top: 4px;
-    }
-    .qbtn-new:hover { opacity: .88; }
 
     /* Spinner */
     .spinner {
@@ -775,7 +793,7 @@
       .qcard { display: none; }
       .qcard.step-active { display: block; }
 
-      /* Boutons d'action full-width, empi lés */
+      /* Boutons d'action full-width, empilés */
       .q-actions {
         flex-direction: column;
       }
@@ -808,7 +826,7 @@
       .odo-digit   { width: 38px; height: 50px; }
       .screen      { padding: 16px 14px 48px; gap: 14px; }
       .qcard-body  { padding: 16px 14px 14px; gap: 12px; }
-      /* Boutons auto-éval empi lés sur petit écran */
+      /* Boutons auto-éval empilés sur petit écran */
       .self-eval-btns { flex-direction: column; }
       .qbtn-yes, .qbtn-no { flex: none; width: 100%; }
     }
