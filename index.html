@@ -74,30 +74,6 @@
       color: var(--text2);
     }
 
-    #api-key-badge {
-      font-size: .72rem;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 99px;
-      background: var(--warn);
-      color: #000;
-    }
-
-    #btn-settings {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text2);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      padding: 7px 14px;
-      font-size: .83rem;
-      font-weight: 500;
-      transition: color .15s, border-color .15s, background .15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    #btn-settings:hover { color: var(--text); border-color: var(--accent); background: var(--surface2); }
 
     /* ─── Screen wrapper ────────────────────────────────────────── */
     .screen {
@@ -732,107 +708,6 @@
     }
 
 
-    /* ─── Settings screen ───────────────────────────────────────────────────── */
-    .settings-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-    }
-
-    .settings-card h2 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .field label {
-      font-size: .75rem;
-      font-weight: 700;
-      color: var(--text2);
-      text-transform: uppercase;
-      letter-spacing: .07em;
-    }
-    .field input, .field select {
-      background: var(--bg);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-size: .93rem;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      width: 100%;
-      font-family: inherit;
-    }
-    .field input:focus, .field select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
-    }
-    .field select option { background: var(--surface2); }
-    .field .hint {
-      font-size: .76rem;
-      color: var(--text2);
-      line-height: 1.5;
-    }
-    .field .hint strong { color: var(--ok); }
-
-    .settings-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding-top: 4px;
-    }
-
-    .btn-save {
-      background: var(--accent);
-      color: #fff;
-      cursor: pointer;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: .9rem;
-      font-weight: 600;
-      padding: 10px 20px;
-      transition: opacity .15s;
-    }
-    .btn-save:hover { opacity: .88; }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      font-size: .88rem;
-      font-weight: 500;
-      padding: 9px 18px;
-      transition: color .15s, border-color .15s;
-    }
-    .btn-ghost:hover { color: var(--text); border-color: var(--text2); }
-
-    .btn-danger {
-      background: rgba(239,68,68,.12);
-      border: 1px solid rgba(239,68,68,.3);
-      color: var(--ko);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      font-size: .85rem;
-      font-weight: 600;
-      padding: 9px 16px;
-      margin-left: auto;
-      transition: background .15s;
-    }
-    .btn-danger:hover { background: rgba(239,68,68,.2); }
-
     /* ─── Stepper nav (mobile question-by-question) ───────────────────── */
     .stepper-nav {
       display: none;
@@ -919,9 +794,7 @@
       .back-btn { min-height: 44px; padding: 10px 16px; font-size: .9rem; }
 
       /* iOS : empêcher le zoom auto sur les champs (min 16px) */
-      .q-textarea         { font-size: 16px; }
-      .field input,
-      .field select       { font-size: 16px; }
+      .q-textarea { font-size: 16px; }
 
       /* Safe-area bas */
       body {
@@ -935,10 +808,6 @@
       .odo-digit   { width: 38px; height: 50px; }
       .screen      { padding: 16px 14px 48px; gap: 14px; }
       .qcard-body  { padding: 16px 14px 14px; gap: 12px; }
-      .settings-card { padding: 20px 16px; }
-      .settings-actions { flex-direction: column; }
-      .btn-danger { margin-left: 0; }
-
       /* Boutons auto-éval empi lés sur petit écran */
       .self-eval-btns { flex-direction: column; }
       .qbtn-yes, .qbtn-no { flex: none; width: 100%; }
@@ -951,10 +820,6 @@
     <div class="header-brand">
       <h1>Permis B</h1>
       <span class="header-pill">Questions voiture</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span id="api-key-badge" class="hidden">Clé API manquante</span>
-      <button id="btn-settings">⚙ Paramètres</button>
     </div>
   </header>
 
@@ -995,53 +860,6 @@
     <div id="score-container"></div>
 
     <div id="cards-container"></div>
-
-  </div>
-
-  <!-- ══════════════════════ ÉCRAN 3 — Paramètres ══════════════════════ -->
-  <div id="screen-settings" class="screen hidden">
-
-    <div class="settings-card">
-      <h2>Configuration IA</h2>
-
-      <div class="field">
-        <label for="select-provider">Fournisseur</label>
-        <select id="select-provider">
-          <option value="anthropic">Anthropic — Claude</option>
-          <option value="openai">OpenAI — GPT</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="input-api-key">Clé API</label>
-        <input
-          type="password"
-          id="input-api-key"
-          placeholder="sk-ant-…   ou   sk-…"
-          autocomplete="off"
-        />
-        <span class="hint">
-          Stockée <strong>uniquement dans ton navigateur</strong> (localStorage).
-          Elle n'est jamais envoyée à un serveur tiers — elle va directement à l'API choisie.
-          Sans clé, l'évaluation fonctionne en mode démo simulé.
-        </span>
-      </div>
-
-      <div class="field">
-        <label for="input-model">Modèle (optionnel)</label>
-        <input
-          type="text"
-          id="input-model"
-          placeholder="Laisser vide pour le modèle par défaut"
-        />
-      </div>
-
-      <div class="settings-actions">
-        <button id="btn-save-settings" class="btn-save">Enregistrer</button>
-        <button id="btn-cancel-settings" class="btn-ghost">Annuler</button>
-        <button id="btn-reset-stats" class="btn-danger">Effacer l'historique</button>
-      </div>
-    </div>
 
   </div>
 

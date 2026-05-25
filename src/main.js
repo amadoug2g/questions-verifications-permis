@@ -13,9 +13,8 @@ import { storage }      from './utils/storage.js'
 // ─── Éléments DOM ─────────────────────────────────────────────────────────
 
 const screens = {
-  home:      document.getElementById('screen-home'),
-  quiz:      document.getElementById('screen-quiz'),
-  settings:  document.getElementById('screen-settings'),
+  home: document.getElementById('screen-home'),
+  quiz: document.getElementById('screen-quiz'),
 }
 
 const show = (name) => {
@@ -27,20 +26,7 @@ const show = (name) => {
 
 const engine = new QuizEngine()
 
-const getLLM = () => {
-  // En production (Cloudflare), on passe par /api/evaluate — gratuit, sans clé.
-  const isDeployed = !['localhost', '127.0.0.1'].includes(window.location.hostname)
-  if (isDeployed) {
-    return new LLMService({ provider: 'cloudflare' })
-  }
-  // En local : clé API si configurée, sinon mode démo automatique.
-  const key = storage.getApiKey()
-  return new LLMService({
-    provider: storage.getProvider(),
-    apiKey: key || '',
-    model: storage.getModel() || undefined,
-  })
-}
+const getLLM = () => new LLMService({ provider: 'cloudflare' })
 
 const odometer = new Odometer({
   container: document.getElementById('odo-container'),
@@ -167,39 +153,8 @@ function startSession(id) {
   buildStepper(cards, container)
 }
 
-// ─── Paramètres ───────────────────────────────────────────────────────────
-
-document.getElementById('btn-settings')?.addEventListener('click', () => {
-  document.getElementById('input-api-key').value = storage.getApiKey()
-  document.getElementById('select-provider').value = storage.getProvider()
-  document.getElementById('input-model').value = storage.getModel()
-  show('settings')
-})
-
-document.getElementById('btn-save-settings')?.addEventListener('click', () => {
-  storage.setApiKey(document.getElementById('input-api-key').value.trim())
-  storage.setProvider(document.getElementById('select-provider').value)
-  storage.setModel(document.getElementById('input-model').value.trim())
-  show('home')
-})
-
-document.getElementById('btn-cancel-settings')?.addEventListener('click', () => show('home'))
-
 document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
-
-document.getElementById('btn-reset-stats')?.addEventListener('click', () => {
-  if (confirm('Effacer tout l\'historique de scores ?')) {
-    storage.resetStats()
-    alert('Historique effacé.')
-  }
-})
 
 // ─── Init ─────────────────────────────────────────────────────────────────
 
 show('home')
-
-// Affiche un badge si aucune clé API n'est configurée
-if (!storage.getApiKey()) {
-  const badge = document.getElementById('api-key-badge')
-  if (badge) badge.classList.remove('hidden')
-}
