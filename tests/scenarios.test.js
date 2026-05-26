@@ -1,1 +1,241 @@
-LyoqCiAqIHNjZW5hcmlvcy50ZXN0LmpzIOKAlCBTdWl0ZSBkZSB0ZXN0cyBUREQgcG91ciB2YWxpZGVyIGxlcyBkb25uw6llcyBkZXMgc2PDqW5hcmlvcy4KICoKICogQ291Y2hlIDEgOiBUZXN0cyBzdHJ1Y3R1cmVscyAoZm9ybWF0LCBjaGFtcHMsIHBhcml0w6kgSUQvdHlwZSkKICogQ291Y2hlIDIgOiBUZXN0cyBjb250cmUgbGUgUERGIG9mZmljaWVsIERTUi9CUlBDRSAoc291cmNlIGRlIHbDqXJpdMOpKQogKiBDb3VjaGUgMyA6IFRlc3RzIGFudGktaGFsbHVjaW5hdGlvbiBzdXIgbGVzIGNoYW1wcyBleHBsYWluCiAqIENvdWNoZSA0IDogVGVzdHMgZGUgcsOpZ3Jlc3Npb24gY29ubnVzIChleDogc2PDqW5hcmlvIDI4ICJjb3Vycm9pZSIpCiAqIENvdWNoZSA1IDogU21va2UgdGVzdHMgKGNvdW50LCBnZXRTY2VuYXJpb0J5SWQpCiAqLwoKaW1wb3J0IHsgcmVhZEZpbGVTeW5jIH0gZnJvbSAnZnMnCmltcG9ydCB7IHJlc29sdmUsIGRpcm5hbWUgfSBmcm9tICdwYXRoJwppbXBvcnQgeyBmaWxlVVJMVG9QYXRoIH0gZnJvbSAndXJsJwppbXBvcnQgeyBkZXNjcmliZSwgaXQsIGV4cGVjdCwgdGVzdCB9IGZyb20gJ3ZpdGVzdCcKaW1wb3J0IHsgU0NFTkFSSU9TLCBnZXRTY2VuYXJpb0J5SWQgfSBmcm9tICcuLi9zcmMvZGF0YS9zY2VuYXJpb3MuanMnCgpjb25zdCBfX2Rpcm5hbWUgPSBkaXJuYW1lKGZpbGVVUkxUb1BhdGgoaW1wb3J0Lm1ldGEudXJsKSkKY29uc3QgUERGX1BBVEggPSByZXNvbHZlKF9fZGlybmFtZSwgJ2ZpeHR1cmVzL3BkZi1zb3VyY2UudHh0JykKY29uc3QgcGRmVGV4dCA9IHJlYWRGaWxlU3luYyhQREZfUEFUSCwgJ3V0Zi04JykKCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQovLyBIZWxwZXJzCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKLyoqCiAqIE5vcm1hbGlzZSB1biB0ZXh0ZSBwb3VyIGNvbXBhcmFpc29uIGZ1enp5IDoKICogLSBNaW51c2N1bGVzCiAqIC0gU3VwcHJpbWUgbGVzIGFjY2VudHMKICogLSBOb3JtYWxpc2UgbGVzIGVzcGFjZXMgbXVsdGlwbGVzCiAqIC0gUmV0aXJlIGxhIHBvbmN0dWF0aW9uIGRlIHPDqXBhcmF0aW9uCiAqLwpmdW5jdGlvbiBub3JtYWxpemUodGV4dCkgewogIHJldHVybiB0ZXh0CiAgICAudG9Mb3dlckNhc2UoKQogICAgLm5vcm1hbGl6ZSgnTkZEJykKICAgIC5yZXBsYWNlKC9bzIAtza9dL2csICcnKSAvLyByZXRpcmUgbGVzIGRpYWNyaXRpcXVlcwogICAgLnJlcGxhY2UoL1snJ2BdL2csICInIikKICAgIC5yZXBsYWNlKC9bXlx3XHMnXS9nLCAnICcpICAgICAgIC8vIHBvbmN0dWF0aW9uIC0+IGVzcGFjZQogICAgLnJlcGxhY2UoL1xzKy9nLCAnICcpCiAgICAudHJpbSgpCn0KCi8qKgogKiBFeHRyYWl0IGxlcyBtb3RzIHNpZ25pZmljYXRpZnMgKD4gMyBsZXR0cmVzKSBkJ3VuIHRleHRlIG5vcm1hbGlzw6kuCiAqLwpmdW5jdGlvbiBzaWduaWZpY2FudFdvcmRzKHRleHQpIHsKICByZXR1cm4gbm9ybWFsaXplKHRleHQpCiAgICAuc3BsaXQoJyAnKQogICAgLmZpbHRlcih3ID0+IHcubGVuZ3RoID4gMykKfQoKLyoqCiAqIE5vcm1hbGlzZSBldCBkw6ljb3VwZSBlbiBtb3RzIHNpZ25pZmljYXRpZnMgKD4gMyBsZXR0cmVzKSwgZW4gc3BsaXRhbnQgYXVzc2kKICogc3VyIGxlcyBhcG9zdHJvcGhlcyBwb3VyIHF1ZSAibCdhcnLDqnQiIGRvbm5lIFsiYXJyZXQiXSBldCBub24gWyJsJ2FycmV0Il0uCiAqLwpmdW5jdGlvbiBzaWduaWZpY2FudFdvcmRzU3RyaWN0KHRleHQpIHsKICByZXR1cm4gbm9ybWFsaXplKHRleHQpCiAgICAucmVwbGFjZSgvJy9nLCAnICcpICAgLy8gc8OpcGFyZSBsZXMgY29udHJhY3Rpb25zIDogbCdhcnLDqnQg4oaSIGwgYXJyZXQKICAgIC5zcGxpdCgnICcpCiAgICAuZmlsdGVyKHcgPT4gdy5sZW5ndGggPiAzKQp9CgovKioKICogVsOpcmlmaWUgcXUnYXUgbW9pbnMgYHRocmVzaG9sZGAlIGRlcyBtb3RzIHNpZ25pZmljYXRpZnMgKD4gMyBsZXR0cmVzKSBkZQogKiBgdmFsdWVgIHNvbnQgcHLDqXNlbnRzIGRhbnMgbGUgdGV4dGUgZHUgUERGIChyZWNoZXJjaGUgZ2xvYmFsZSkuCiAqCiAqIFN0cmF0w6lnaWUgOiBsZSBsYXlvdXQgZGV1eC1jb2xvbm5lcyBkdSBQREYgcmVuZCBsJ2V4dHJhY3Rpb24gZGUgYmxvY3MgcGFyCiAqIElEIG5vbiBmaWFibGUuIE9uIHJlY2hlcmNoZSBkb25jIGRhbnMgbCdpbnTDqWdyYWxpdMOpIGR1IHRleHRlIGV4dHJhaXQuCiAqIExlcyByw6lwb25zZXMgKGExL2EyL2EzKSBkZSBsJ2FwcCBzb250IGVucmljaGllcyBww6lkYWdvZ2lxdWVtZW50IHBhciByYXBwb3J0CiAqIGF1IFBERiDigJQgb24gbidhcHBsaXF1ZSBkb25jIGxlIHRlc3Qgc3RyaWN0IHF1J2F1eCBxdWVzdGlvbnMgKHExL3EyL3EzKS4KICovCmZ1bmN0aW9uIGV4cGVjdE1hdGNoZXNQREYoc2NlbmFyaW9JZCwgZmllbGQsIHZhbHVlLCBwZGZDb250ZW50LCB0aHJlc2hvbGQgPSAwLjY1KSB7CiAgY29uc3QgcGRmTm9ybSA9IG5vcm1hbGl6ZShwZGZDb250ZW50KS5yZXBsYWNlKC8nL2csICcgJykKICBjb25zdCB3b3JkcyA9IHNpZ25pZmljYW50V29yZHNTdHJpY3QodmFsdWUpCgogIGlmICh3b3Jkcy5sZW5ndGggPT09IDApIHJldHVybiAvLyB0ZXh0ZSB0cm9wIGNvdXJ0LCBwYXMgZGUgbW90cyBzaWduaWZpY2F0aWZzCgogIGNvbnN0IG1hdGNoZWQgPSB3b3Jkcy5maWx0ZXIodyA9PiBwZGZOb3JtLmluY2x1ZGVzKHcpKQogIGNvbnN0IHJhdGlvID0gbWF0Y2hlZC5sZW5ndGggLyB3b3Jkcy5sZW5ndGgKCiAgaWYgKHJhdGlvIDwgdGhyZXNob2xkKSB7CiAgICBjb25zdCBtaXNzaW5nID0gd29yZHMuZmlsdGVyKHcgPT4gIXBkZk5vcm0uaW5jbHVkZXModykpCiAgICB0aHJvdyBuZXcgRXJyb3IoCiAgICAgIGBTY8OpbmFyaW8gJHtzY2VuYXJpb0lkfSDigJQgJHtmaWVsZH0gOiBzZXVsZW1lbnQgJHtNYXRoLnJvdW5kKHJhdGlvICogMTAwKX0lIGRlcyBtb3RzIHRyb3V2w6lzIGRhbnMgbGUgUERGIChzZXVpbCA6ICR7TWF0aC5yb3VuZCh0aHJlc2hvbGQgKiAxMDApfSUpLlxuYCArCiAgICAgIGAgIFZhbGV1ciB0ZXN0w6llIDogIiR7dmFsdWV9IlxuYCArCiAgICAgIGAgIE1vdHMgbWFucXVhbnRzIChhYnNlbnRzIGR1IFBERiBlbnRpZXIpIDogJHttaXNzaW5nLmpvaW4oJywgJyl9YAogICAgKQogIH0KfQoKLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCi8vIENvdWNoZSA1IOKAlCBTbW9rZSB0ZXN0cyAoZMOpY2xhcsOpcyBkJ2Fib3JkIHBvdXIgdmlzaWJpbGl0w6kgcmFwaWRlKQovLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCmRlc2NyaWJlKCdDb3VjaGUgNSDigJQgU21va2UgdGVzdHMnLCAoKSA9PiB7CiAgaXQoJ1NDRU5BUklPUyBjb250aWVudCBleGFjdGVtZW50IDYwIHNjw6luYXJpb3MnLCAoKSA9PiB7CiAgICBleHBlY3QoU0NFTkFSSU9TKS50b0hhdmVMZW5ndGgoNjApCiAgfSkKCiAgaXQoJ2dldFNjZW5hcmlvQnlJZCgiMDEiKSByZXRvdXJuZSBsZSBzY8OpbmFyaW8gMDEnLCAoKSA9PiB7CiAgICBjb25zdCBzID0gZ2V0U2NlbmFyaW9CeUlkKCcwMScpCiAgICBleHBlY3Qocykubm90LnRvQmVOdWxsKCkKICAgIGV4cGVjdChzLmlkKS50b0JlKCcwMScpCiAgfSkKCiAgaXQoJ2dldFNjZW5hcmlvQnlJZCgiNjEiKSByZXRvdXJuZSBudWxsIChzY8OpbmFyaW8gbm9uIGltcGzDqW1lbnTDqSknLCAoKSA9PiB7CiAgICBleHBlY3QoZ2V0U2NlbmFyaW9CeUlkKCc2MScpKS50b0JlTnVsbCgpCiAgfSkKCiAgaXQoJ2dldFNjZW5hcmlvQnlJZCgxKSAobnVtw6lyaXF1ZSkgcmV0b3VybmUgbGUgc2PDqW5hcmlvIDAxJywgKCkgPT4gewogICAgY29uc3QgcyA9IGdldFNjZW5hcmlvQnlJZCgxKQogICAgZXhwZWN0KHMpLm5vdC50b0JlTnVsbCgpCiAgICBleHBlY3Qocy5pZCkudG9CZSgnMDEnKQogIH0pCn0pCgovLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KLy8gQ291Y2hlIDEg4oCUIFRlc3RzIHN0cnVjdHVyZWxzCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKZGVzY3JpYmUoJ0NvdWNoZSAxIOKAlCBUZXN0cyBzdHJ1Y3R1cmVscycsICgpID0+IHsKICBpdCgnUGFzIGRlIGRvdWJsb25zIGRcJ0lEJywgKCkgPT4gewogICAgY29uc3QgaWRzID0gU0NFTkFSSU9TLm1hcChzID0+IHMuaWQpCiAgICBjb25zdCB1bmlxdWUgPSBuZXcgU2V0KGlkcykKICAgIGV4cGVjdCh1bmlxdWUuc2l6ZSkudG9CZShpZHMubGVuZ3RoKQogIH0pCgogIGRlc2NyaWJlLmVhY2goU0NFTkFSSU9TKSgnU2PDqW5hcmlvICRpZCcsIChzY2VuYXJpbykgPT4gewogICAgaXQoJ2lkIGVzdCB1bmUgc3RyaW5nIMOgIDIgY2hpZmZyZXMnLCAoKSA9PiB7CiAgICAgIGV4cGVjdChzY2VuYXJpby5pZCkudG9NYXRjaCgvXlxkezJ9JC8pCiAgICB9KQoKICAgIGl0KCd0eXBlMSBlc3QgIlZJIiBvdSAiVkUiJywgKCkgPT4gewogICAgICBleHBlY3QoWydWSScsICdWRSddKS50b0NvbnRhaW4oc2NlbmFyaW8udHlwZTEpCiAgICB9KQoKICAgIGl0KCdwYXJpdMOpIHJlc3BlY3TDqWUgOiBwYWlyIOKGkiBWRSwgaW1wYWlyIOKGkiBWSScsICgpID0+IHsKICAgICAgY29uc3QgbnVtID0gcGFyc2VJbnQoc2NlbmFyaW8uaWQsIDEwKQogICAgICBjb25zdCBleHBlY3RlZFR5cGUgPSBudW0gJSAyID09PSAwID8gJ1ZFJyA6ICdWSScKICAgICAgZXhwZWN0KHNjZW5hcmlvLnR5cGUxKS50b0JlKGV4cGVjdGVkVHlwZSkKICAgIH0pCgogICAgaXQoJ2NoYW1wcyBRL0EgcHLDqXNlbnRzIGV0IG5vbiB2aWRlcycsICgpID0+IHsKICAgICAgZm9yIChjb25zdCBmaWVsZCBvZiBbJ3ExJywgJ2ExJywgJ3EyJywgJ2EyJywgJ3EzJywgJ2EzJ10pIHsKICAgICAgICBleHBlY3Qoc2NlbmFyaW9bZmllbGRdLCBgY2hhbXAgJHtmaWVsZH0gbWFucXVhbnRgKS50b0JlRGVmaW5lZCgpCiAgICAgICAgZXhwZWN0KHNjZW5hcmlvW2ZpZWxkXS50cmltKCksIGBjaGFtcCAke2ZpZWxkfSB2aWRlYCkubm90LnRvQmUoJycpCiAgICAgIH0KICAgIH0pCgogICAgaXQoJ3Bob3RvMSwgc2kgcHLDqXNlbnQsIGVzdCBhdSBmb3JtYXQga2ViYWItY2FzZSBhdmVjIGV4dGVuc2lvbicsICgpID0+IHsKICAgICAgaWYgKHNjZW5hcmlvLnBob3RvMSAhPT0gdW5kZWZpbmVkKSB7CiAgICAgICAgZXhwZWN0KHNjZW5hcmlvLnBob3RvMSkudG9NYXRjaCgvXlthLXowLTktXStcLihqcGd8cG5nfHdlYnApJC8pCiAgICAgIH0KICAgIH0pCiAgfSkKfSkKCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQovLyBDb3VjaGUgMiDigJQgVGVzdHMgY29udHJlIGxlIFBERiAoc291cmNlIGRlIHbDqXJpdMOpKQovLyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCmRlc2NyaWJlKCdDb3VjaGUgMiDigJQgVGVzdHMgY29udHJlIGxlIFBERiBvZmZpY2llbCBEU1IvQlJQQ0UnLCAoKSA9PiB7CiAgLy8gTm90ZSA6IHNldWxlcyBsZXMgcXVlc3Rpb25zIChxMS9xMi9xMykgc29udCB0ZXN0w6llcyBjb250cmUgbGUgUERGLgogIC8vIExlcyByw6lwb25zZXMgKGExL2EyL2EzKSBzb250IHDDqWRhZ29naXF1ZW1lbnQgZW5yaWNoaWVzIGRhbnMgbCdhcHAgcGFyIHJhcHBvcnQKICAvLyBhdXggcsOpcG9uc2VzIGNvdXJ0ZXMgZHUgUERGIOKAlCBsZXVyIHZhbGlkYXRpb24gZXN0IGFzc3Vyw6llIHBhciBsYSBjb3VjaGUgMwogIC8vIChhbnRpLWhhbGx1Y2luYXRpb24pIGV0IGxhIGNvdWNoZSA0IChyw6lncmVzc2lvbnMgY29ubnVlcykuCiAgZGVzY3JpYmUuZWFjaChTQ0VOQVJJT1MpKCdTY8OpbmFyaW8gJGlkJywgKHNjZW5hcmlvKSA9PiB7CiAgICBpdCgncTEgZmlndXJlIGRhbnMgbGUgUERGJywgKCkgPT4gewogICAgICBleHBlY3RNYXRjaGVzUERGKHNjZW5hcmlvLmlkLCAncTEnLCBzY2VuYXJpby5xMSwgcGRmVGV4dCkKICAgIH0pCgogICAgaXQoJ3EyIGZpZ3VyZSBkYW5zIGxlIFBERicsICgpID0+IHsKICAgICAgZXhwZWN0TWF0Y2hlc1BERihzY2VuYXJpby5pZCwgJ3EyJywgc2NlbmFyaW8ucTIsIHBkZlRleHQpCiAgICB9KQoKICAgIGl0KCdxMyBmaWd1cmUgZGFucyBsZSBQREYnLCAoKSA9PiB7CiAgICAgIGV4cGVjdE1hdGNoZXNQREYoc2NlbmFyaW8uaWQsICdxMycsIHNjZW5hcmlvLnEzLCBwZGZUZXh0KQogICAgfSkKICB9KQp9KQoKLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCi8vIENvdWNoZSAzIOKAlCBUZXN0cyBhbnRpLWhhbGx1Y2luYXRpb24gc3VyIGV4cGxhaW4KLy8gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgovKiogQmxvY2tsaXN0IGRlIHRlcm1lcyBpbnRlcmRpdHMg4oCUIMOgIGVucmljaGlyIGF1IGZpbCBkdSB0ZW1wcyAqLwpjb25zdCBIQUxMVUNJTkFUSU9OX0JMT0NLTElTVCA9IFsKICAnY291cnJvaWUgZGUgZGlzdHJpYnV0aW9uJywKXQoKZGVzY3JpYmUoJ0NvdWNoZSAzIOKAlCBUZXN0cyBhbnRpLWhhbGx1Y2luYXRpb24gc3VyIGV4cGxhaW4nLCAoKSA9PiB7CiAgZGVzY3JpYmUuZWFjaChTQ0VOQVJJT1MpKCdTY8OpbmFyaW8gJGlkJywgKHNjZW5hcmlvKSA9PiB7CiAgICBmb3IgKGNvbnN0IG4gb2YgWzEsIDIsIDNdKSB7CiAgICAgIGNvbnN0IGZpZWxkID0gYGV4cGxhaW4ke259YAogICAgICBpZiAoc2NlbmFyaW9bZmllbGRdICE9PSB1bmRlZmluZWQpIHsKICAgICAgICBpdChgJHtmaWVsZH0gZmFpdCBtb2lucyBkZSAyNTAgY2FyYWN0w6hyZXNgLCAoKSA9PiB7CiAgICAgICAgICBleHBlY3Qoc2NlbmFyaW9bZmllbGRdLmxlbmd0aCkudG9CZUxlc3NUaGFuKDI1MCkKICAgICAgICB9KQoKICAgICAgICBpdChgJHtmaWVsZH0gbmUgY29udGllbnQgcGFzIGRlIHRlcm1lcyBkZSBsYSBibG9ja2xpc3RgLCAoKSA9PiB7CiAgICAgICAgICBjb25zdCB2YWx1ZSA9IHNjZW5hcmlvW2ZpZWxkXS50b0xvd2VyQ2FzZSgpCiAgICAgICAgICBmb3IgKGNvbnN0IHRlcm0gb2YgSEFMTFVDSU5BVElPTl9CTE9DS0xJU1QpIHsKICAgICAgICAgICAgZXhwZWN0KHZhbHVlLCBgIiR7dGVybX0iIHRyb3V2w6kgZGFucyAke2ZpZWxkfWApLm5vdC50b0NvbnRhaW4odGVybSkKICAgICAgICAgIH0KICAgICAgICB9KQogICAgICB9CiAgICB9CiAgfSkKfSkKCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQovLyBDb3VjaGUgNCDigJQgVGVzdHMgZGUgcsOpZ3Jlc3Npb24gY29ubnVzCi8vIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKZGVzY3JpYmUoJ0NvdWNoZSA0IOKAlCBUZXN0cyBkZSByw6lncmVzc2lvbiBjb25udXMnLCAoKSA9PiB7CiAgaXQoJ1Njw6luYXJpbyAyOCBxMSA6IGNvbnRpZW50ICJkaXNwb3NpdGlmcyByw6lmbMOpY2hpc3NhbnRzIicsICgpID0+IHsKICAgIGNvbnN0IHMgPSBnZXRTY2VuYXJpb0J5SWQoJzI4JykKICAgIGV4cGVjdChzKS5ub3QudG9CZU51bGwoKQogICAgZXhwZWN0KHMucTEudG9Mb3dlckNhc2UoKSkudG9Db250YWluKCdkaXNwb3NpdGlmcyByw6lmbMOpY2hpc3NhbnRzJykKICB9KQoKICBpdCgnU2PDqW5hcmlvIDI4IHExIDogbmUgY29udGllbnQgUEFTICJjb3Vycm9pZSInLCAoKSA9PiB7CiAgICBjb25zdCBzID0gZ2V0U2NlbmFyaW9CeUlkKCcyOCcpCiAgICBleHBlY3Qocykubm90LnRvQmVOdWxsKCkKICAgIGV4cGVjdChzLnExLnRvTG93ZXJDYXNlKCkpLm5vdC50b0NvbnRhaW4oJ2NvdXJyb2llJykKICB9KQoKICBpdCgnU2PDqW5hcmlvIDI4IGV4cGxhaW4xIDogbmUgY29udGllbnQgUEFTICJjb3Vycm9pZSInLCAoKSA9PiB7CiAgICBjb25zdCBzID0gZ2V0U2NlbmFyaW9CeUlkKCcyOCcpCiAgICBleHBlY3Qocykubm90LnRvQmVOdWxsKCkKICAgIGlmIChzLmV4cGxhaW4xKSB7CiAgICAgIGV4cGVjdChzLmV4cGxhaW4xLnRvTG93ZXJDYXNlKCkpLm5vdC50b0NvbnRhaW4oJ2NvdXJyb2llJykKICAgIH0KICB9KQoKICBpdCgnU2PDqW5hcmlvIDAxIHExIDogY29udGllbnQgImhhdXRldXIgZGVzIGZldXgiJywgKCkgPT4gewogICAgY29uc3QgcyA9IGdldFNjZW5hcmlvQnlJZCgnMDEnKQogICAgZXhwZWN0KHMpLm5vdC50b0JlTnVsbCgpCiAgICBleHBlY3Qocy5xMS50b0xvd2VyQ2FzZSgpKS50b0NvbnRhaW4oJ2hhdXRldXIgZGVzIGZldXgnKQogIH0pCn0pCg==
+/**
+ * scenarios.test.js — Suite de tests TDD pour valider les données des scénarios.
+ *
+ * Couche 1 : Tests structurels (format, champs, parité ID/type)
+ * Couche 2 : Tests contre le PDF officiel DSR/BRPCE (source de vérité)
+ * Couche 3 : Tests anti-hallucination sur les champs explain
+ * Couche 4 : Tests de régression connus (ex: scénario 28 "courroie")
+ * Couche 5 : Smoke tests (count, getScenarioById)
+ */
+
+import { readFileSync } from 'fs'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { describe, it, expect, test } from 'vitest'
+import { SCENARIOS, getScenarioById } from '../src/data/scenarios.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const PDF_PATH = resolve(__dirname, 'fixtures/pdf-source.txt')
+const pdfText = readFileSync(PDF_PATH, 'utf-8')
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Normalise un texte pour comparaison fuzzy :
+ * - Minuscules
+ * - Supprime les accents
+ * - Normalise les espaces multiples
+ * - Retire la ponctuation de séparation
+ */
+function normalize(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // retire les diacritiques
+    .replace(/[''`]/g, "'")
+    .replace(/[^\w\s']/g, ' ')       // ponctuation -> espace
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/**
+ * Extrait les mots significatifs (> 3 lettres) d'un texte normalisé.
+ */
+function significantWords(text) {
+  return normalize(text)
+    .split(' ')
+    .filter(w => w.length > 3)
+}
+
+/**
+ * Normalise et découpe en mots significatifs (> 3 lettres), en splitant aussi
+ * sur les apostrophes pour que "l'arrêt" donne ["arret"] et non ["l'arret"].
+ */
+function significantWordsStrict(text) {
+  return normalize(text)
+    .replace(/'/g, ' ')   // sépare les contractions : l'arrêt → l arret
+    .split(' ')
+    .filter(w => w.length > 3)
+}
+
+/**
+ * Vérifie qu'au moins `threshold`% des mots significatifs (> 3 lettres) de
+ * `value` sont présents dans le texte du PDF (recherche globale).
+ *
+ * Stratégie : le layout deux-colonnes du PDF rend l'extraction de blocs par
+ * ID non fiable. On recherche donc dans l'intégralité du texte extrait.
+ * Les réponses (a1/a2/a3) de l'app sont enrichies pédagogiquement par rapport
+ * au PDF — on n'applique donc le test strict qu'aux questions (q1/q2/q3).
+ */
+function expectMatchesPDF(scenarioId, field, value, pdfContent, threshold = 0.65) {
+  const pdfNorm = normalize(pdfContent).replace(/'/g, ' ')
+  const words = significantWordsStrict(value)
+
+  if (words.length === 0) return // texte trop court, pas de mots significatifs
+
+  const matched = words.filter(w => pdfNorm.includes(w))
+  const ratio = matched.length / words.length
+
+  if (ratio < threshold) {
+    const missing = words.filter(w => !pdfNorm.includes(w))
+    throw new Error(
+      `Scénario ${scenarioId} — ${field} : seulement ${Math.round(ratio * 100)}% des mots trouvés dans le PDF (seuil : ${Math.round(threshold * 100)}%).\n` +
+      `  Valeur testée : "${value}"\n` +
+      `  Mots manquants (absents du PDF entier) : ${missing.join(', ')}`
+    )
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Couche 5 — Smoke tests (déclarés d'abord pour visibilité rapide)
+// ---------------------------------------------------------------------------
+
+describe('Couche 5 — Smoke tests', () => {
+  it('SCENARIOS contient exactement 60 scénarios', () => {
+    expect(SCENARIOS).toHaveLength(60)
+  })
+
+  it('getScenarioById("01") retourne le scénario 01', () => {
+    const s = getScenarioById('01')
+    expect(s).not.toBeNull()
+    expect(s.id).toBe('01')
+  })
+
+  it('getScenarioById("61") retourne null (scénario non implémenté)', () => {
+    expect(getScenarioById('61')).toBeNull()
+  })
+
+  it('getScenarioById(1) (numérique) retourne le scénario 01', () => {
+    const s = getScenarioById(1)
+    expect(s).not.toBeNull()
+    expect(s.id).toBe('01')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Couche 1 — Tests structurels
+// ---------------------------------------------------------------------------
+
+describe('Couche 1 — Tests structurels', () => {
+  it('Pas de doublons d\'ID', () => {
+    const ids = SCENARIOS.map(s => s.id)
+    const unique = new Set(ids)
+    expect(unique.size).toBe(ids.length)
+  })
+
+  describe.each(SCENARIOS)('Scénario $id', (scenario) => {
+    it('id est une string à 2 chiffres', () => {
+      expect(scenario.id).toMatch(/^\d{2}$/)
+    })
+
+    it('type1 est "VI" ou "VE"', () => {
+      expect(['VI', 'VE']).toContain(scenario.type1)
+    })
+
+    it('parité respectée : pair → VE, impair → VI', () => {
+      const num = parseInt(scenario.id, 10)
+      const expectedType = num % 2 === 0 ? 'VE' : 'VI'
+      expect(scenario.type1).toBe(expectedType)
+    })
+
+    it('champs Q/A présents et non vides', () => {
+      for (const field of ['q1', 'a1', 'q2', 'a2', 'q3', 'a3']) {
+        expect(scenario[field], `champ ${field} manquant`).toBeDefined()
+        expect(scenario[field].trim(), `champ ${field} vide`).not.toBe('')
+      }
+    })
+
+    it('photo1, si présent, est au format kebab-case avec extension', () => {
+      if (scenario.photo1 !== undefined) {
+        expect(scenario.photo1).toMatch(/^[a-z0-9-]+\.(jpg|png|webp)$/)
+      }
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Couche 2 — Tests contre le PDF (source de vérité)
+// ---------------------------------------------------------------------------
+
+describe('Couche 2 — Tests contre le PDF officiel DSR/BRPCE', () => {
+  // Note : seules les questions (q1/q2/q3) sont testées contre le PDF.
+  // Les réponses (a1/a2/a3) sont pédagogiquement enrichies dans l'app par rapport
+  // aux réponses courtes du PDF — leur validation est assurée par la couche 3
+  // (anti-hallucination) et la couche 4 (régressions connues).
+  describe.each(SCENARIOS)('Scénario $id', (scenario) => {
+    it('q1 figure dans le PDF', () => {
+      expectMatchesPDF(scenario.id, 'q1', scenario.q1, pdfText)
+    })
+
+    it('q2 figure dans le PDF', () => {
+      expectMatchesPDF(scenario.id, 'q2', scenario.q2, pdfText)
+    })
+
+    it('q3 figure dans le PDF', () => {
+      expectMatchesPDF(scenario.id, 'q3', scenario.q3, pdfText)
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Couche 3 — Tests anti-hallucination sur explain
+// ---------------------------------------------------------------------------
+
+/** Blocklist de termes interdits — à enrichir au fil du temps */
+const HALLUCINATION_BLOCKLIST = [
+  'courroie de distribution',
+]
+
+describe('Couche 3 — Tests anti-hallucination sur explain', () => {
+  describe.each(SCENARIOS)('Scénario $id', (scenario) => {
+    for (const n of [1, 2, 3]) {
+      const field = `explain${n}`
+      if (scenario[field] !== undefined) {
+        it(`${field} fait moins de 250 caractères`, () => {
+          expect(scenario[field].length).toBeLessThan(250)
+        })
+
+        it(`${field} ne contient pas de termes de la blocklist`, () => {
+          const value = scenario[field].toLowerCase()
+          for (const term of HALLUCINATION_BLOCKLIST) {
+            expect(value, `"${term}" trouvé dans ${field}`).not.toContain(term)
+          }
+        })
+      }
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Couche 4 — Tests de régression connus
+// ---------------------------------------------------------------------------
+
+describe('Couche 4 — Tests de régression connus', () => {
+  it('Scénario 28 q1 : contient "dispositifs réfléchissants"', () => {
+    const s = getScenarioById('28')
+    expect(s).not.toBeNull()
+    expect(s.q1.toLowerCase()).toContain('dispositifs réfléchissants')
+  })
+
+  it('Scénario 28 q1 : ne contient PAS "courroie"', () => {
+    const s = getScenarioById('28')
+    expect(s).not.toBeNull()
+    expect(s.q1.toLowerCase()).not.toContain('courroie')
+  })
+
+  it('Scénario 28 explain1 : ne contient PAS "courroie"', () => {
+    const s = getScenarioById('28')
+    expect(s).not.toBeNull()
+    if (s.explain1) {
+      expect(s.explain1.toLowerCase()).not.toContain('courroie')
+    }
+  })
+
+  it('Scénario 01 q1 : contient "hauteur des feux"', () => {
+    const s = getScenarioById('01')
+    expect(s).not.toBeNull()
+    expect(s.q1.toLowerCase()).toContain('hauteur des feux')
+  })
+})
