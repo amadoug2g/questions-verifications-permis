@@ -93,8 +93,8 @@ function expectMatchesPDF(scenarioId, field, value, pdfContent, threshold = 0.65
 // ---------------------------------------------------------------------------
 
 describe('Couche 5 — Smoke tests', () => {
-  it('SCENARIOS contient exactement 60 scénarios', () => {
-    expect(SCENARIOS).toHaveLength(60)
+  it('SCENARIOS contient exactement 80 scénarios', () => {
+    expect(SCENARIOS).toHaveLength(80)
   })
 
   it('getScenarioById("01") retourne le scénario 01', () => {
@@ -103,8 +103,8 @@ describe('Couche 5 — Smoke tests', () => {
     expect(s.id).toBe('01')
   })
 
-  it('getScenarioById("61") retourne null (scénario non implémenté)', () => {
-    expect(getScenarioById('61')).toBeNull()
+  it('getScenarioById("81") retourne null (scénario non implémenté)', () => {
+    expect(getScenarioById('81')).toBeNull()
   })
 
   it('getScenarioById(1) (numérique) retourne le scénario 01', () => {
