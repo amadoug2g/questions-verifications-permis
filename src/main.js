@@ -141,6 +141,7 @@ function startSession(id) {
         scoreBoard.update(index, value)
         updateStickyDot(index, value)
         if (engine.isComplete) {
+          storage.updateSRSEntry(engine.scenario.id, engine.total)
           const stats = storage.addSession(engine.total)
           scoreBoard.showFinal(engine.total, stats)
         }

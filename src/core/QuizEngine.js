@@ -5,6 +5,7 @@
  */
 
 import { SCENARIOS } from '../data/scenarios.js'
+import { storage } from '../utils/storage.js'
 
 export class QuizEngine extends EventTarget {
   constructor() {
@@ -13,11 +14,53 @@ export class QuizEngine extends EventTarget {
     this.scores = [null, null, null] // null | 0 | 1 pour chaque question
   }
 
-  /** Tire un scénario aléatoire parmi les scénarios disponibles. */
+  /**
+   * Tire un scénario selon l'ordre de priorité SRS :
+   *   1. Overdue (nextDue <= now) — trié par nextDue croissant
+   *   2. Jamais vus (attempts === 0 ou absent de permis_srs)
+   *   3. Planifiés futurs non maîtrisés — le plus proche d'abord
+   *   4. Maîtrisés — aléatoire
+   */
   roll() {
-    const available = SCENARIOS.map(s => s.id)
-    const id = available[Math.floor(Math.random() * available.length)]
-    this.scenario = SCENARIOS.find(s => s.id === id)
+    const now = Date.now()
+    const srsData = storage.getSRSData()
+
+    const overdue   = []  // nextDue <= now (et attempts > 0)
+    const neverSeen = []  // absent ou attempts === 0
+    const upcoming  = []  // nextDue > now, non maîtrisé
+    const mastered  = []  // mastered === true
+
+    for (const s of SCENARIOS) {
+      const entry = srsData[s.id]
+      if (!entry || entry.attempts === 0) {
+        neverSeen.push(s)
+      } else if (entry.mastered) {
+        mastered.push(s)
+      } else if (entry.nextDue <= now) {
+        overdue.push(s)
+      } else {
+        upcoming.push(s)
+      }
+    }
+
+    // Tri : overdue par nextDue croissant, upcoming par nextDue croissant
+    overdue.sort((a, b) => srsData[a.id].nextDue - srsData[b.id].nextDue)
+    upcoming.sort((a, b) => srsData[a.id].nextDue - srsData[b.id].nextDue)
+
+    // Sélection selon priorité — aléatoire à l'intérieur d'un groupe ex-æquo
+    let selected
+    if (overdue.length > 0) {
+      selected = overdue[0]
+    } else if (neverSeen.length > 0) {
+      selected = neverSeen[Math.floor(Math.random() * neverSeen.length)]
+    } else if (upcoming.length > 0) {
+      selected = upcoming[0]
+    } else {
+      // Tous maîtrisés — révision aléatoire parmi les maîtrisés
+      selected = mastered[Math.floor(Math.random() * mastered.length)]
+    }
+
+    this.scenario = selected
     this.scores = [null, null, null]
     this.dispatch('scenario-changed', { scenario: this.scenario })
     return this.scenario
