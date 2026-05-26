@@ -8,6 +8,7 @@ const KEYS = {
   provider: 'permis_provider',
   model: 'permis_model',
   stats: 'permis_stats',
+  srs: 'permis_srs',
 }
 
 export const storage = {
@@ -31,4 +32,100 @@ export const storage = {
     return s
   },
   resetStats: () => localStorage.removeItem(KEYS.stats),
+
+  // ─── SRS (Spaced Repetition System) ───────────────────────────────────
+
+  /**
+   * Lit et parse permis_srs. Retourne {} si absent (première utilisation).
+   * Structure : { [scenarioId]: SRSEntry }
+   */
+  getSRSData: () => JSON.parse(localStorage.getItem(KEYS.srs) || '{}'),
+
+  /**
+   * Retourne l'entrée SRS pour un scénario, ou les valeurs par défaut si absent.
+   */
+  getSRSEntry: (scenarioId) => {
+    const data = storage.getSRSData()
+    return data[scenarioId] ?? { ...DEFAULT_SRS_ENTRY }
+  },
+
+  /**
+   * Applique les règles SRS pour un score donné, persiste le résultat.
+   *
+   * Décision (issue #28 Q2) : score 1 et 2 sont traités identiquement
+   * (interval ÷ 2, streak=0) — une distinction 1/3 vs 2/3 est réservée
+   * à une issue future.
+   *
+   * @param {string} scenarioId
+   * @param {number} score — 0, 1, 2 ou 3
+   */
+  updateSRSEntry: (scenarioId, score) => {
+    const data = storage.getSRSData()
+    const entry = data[scenarioId] ?? { ...DEFAULT_SRS_ENTRY }
+    const updated = computeNextSRS(entry, score, Date.now())
+    data[scenarioId] = updated
+    localStorage.setItem(KEYS.srs, JSON.stringify(data))
+    return updated
+  },
+
+  /** Supprime permis_srs sans toucher à permis_stats. */
+  resetSRS: () => localStorage.removeItem(KEYS.srs),
+}
+
+// ─── Valeurs par défaut d'une entrée SRS ─────────────────────────────────
+
+/** Exporté pour les tests et comme référence de type. */
+export const DEFAULT_SRS_ENTRY = {
+  attempts: 0,
+  correctStreak: 0,
+  interval: 1,    // en heures
+  nextDue: 0,     // ms epoch — 0 = jamais vu = toujours considéré overdue
+  mastered: false,
+}
+
+// ─── Logique de calcul SRS (pure, testable sans localStorage) ────────────
+
+/**
+ * Calcule la nouvelle entrée SRS après un score donné.
+ *
+ * @param {object} entry — entrée SRS courante
+ * @param {number} score — 0, 1, 2 ou 3
+ * @param {number} now   — timestamp ms (injecté pour testabilité)
+ * @returns {object} nouvelle entrée SRS (immutable — ne modifie pas entry)
+ */
+export function computeNextSRS(entry, score, now) {
+  const MS_PER_HOUR = 3600 * 1000
+  let { correctStreak, interval, attempts } = entry
+
+  attempts += 1
+
+  let newStreak, newInterval, newNextDue
+
+  if (score === 3) {
+    newStreak = correctStreak + 1
+    // easeFactor : 1.5 + 0.1×(newStreak-1), plafonné à 2.5
+    const easeFactor = Math.min(1.5 + 0.1 * (newStreak - 1), 2.5)
+    newInterval = Math.max(interval * easeFactor, 24)
+    newNextDue = now + newInterval * MS_PER_HOUR
+  } else if (score === 1 || score === 2) {
+    // Réussite partielle : streak à zéro, interval divisé par 2 (min 1h)
+    newStreak = 0
+    newInterval = Math.max(interval / 2, 1)
+    newNextDue = now + newInterval * MS_PER_HOUR
+  } else {
+    // Échec (score 0) : reset complet
+    newStreak = 0
+    newInterval = 1
+    newNextDue = now + 1 * MS_PER_HOUR
+  }
+
+  const mastered = newStreak >= 3 && newInterval >= 168
+
+  return {
+    attempts,
+    correctStreak: newStreak,
+    interval: newInterval,
+    nextDue: newNextDue,
+    mastered,
+  }
 }
