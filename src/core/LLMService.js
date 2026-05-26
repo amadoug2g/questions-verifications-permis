@@ -57,8 +57,8 @@ export class LLMService {
   }
 
   /** Évalue la réponse d'un candidat pour une question donnée. */
-  async evaluate({ question, officialAnswer, userAnswer, context = '' }) {
-    const raw = await this._complete({ question, officialAnswer, userAnswer, context })
+  async evaluate({ question, officialAnswer, userAnswer, context = '', requiredCount = null }) {
+    const raw = await this._complete({ question, officialAnswer, userAnswer, context, requiredCount })
     return parseEvalResponse(raw)
   }
 
@@ -88,11 +88,11 @@ export class LLMService {
 
   // ── Provider Cloudflare Workers AI (via /api/evaluate) ──────────────────
 
-  async _callCloudflare({ question, officialAnswer, userAnswer, context = '' }) {
+  async _callCloudflare({ question, officialAnswer, userAnswer, context = '', requiredCount = null }) {
     const res = await fetch('/api/evaluate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, officialAnswer, userAnswer, context }),
+      body: JSON.stringify({ question, officialAnswer, userAnswer, context, requiredCount }),
     })
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
@@ -168,7 +168,13 @@ export class LLMService {
 
 // ─── Constructeurs de prompts ──────────────────────────────────────────────
 
-function buildEvalPrompt({ question, officialAnswer, userAnswer, context }) {
+function buildEvalPrompt({ question, officialAnswer, userAnswer, context, requiredCount = null }) {
+  const countRule = requiredCount
+    ? `\nCONSIGNE DE QUANTITÉ : La question demande exactement ${requiredCount} élément(s). ` +
+      `Si le candidat en fournit ${requiredCount} qui sont corrects (même parmi plusieurs possibles), ` +
+      `c'est score 1 "Correct". Ne jamais pénaliser pour ne pas avoir listé les autres options.\n`
+    : ''
+
   return `Évalue si la réponse du candidat couvre les points essentiels de la réponse officielle au permis de conduire français.
 
 Question :
@@ -176,7 +182,7 @@ Question :
 
 Réponse officielle :
 "${officialAnswer}"
-${context ? `\nContexte : ${context}\n` : ''}
+${context ? `\nContexte : ${context}\n` : ''}${countRule}
 Réponse du candidat :
 "${userAnswer}"
 

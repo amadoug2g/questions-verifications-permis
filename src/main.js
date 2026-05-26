@@ -94,7 +94,6 @@ function initStickyScoreBar(scenarioId) {
   if (!bar || !numEl) return
   numEl.textContent = scenarioId
   bar.classList.add('visible')
-  // Reset dots
   for (let i = 0; i < 3; i++) {
     const dot = document.getElementById(`sticky-dot-${i}`)
     if (dot) { dot.classList.remove('dot-ok', 'dot-ko') }
@@ -127,9 +126,9 @@ function startSession(id) {
   initStickyScoreBar(scenario.id)
 
   const questions = [
-    { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1 },
-    { type: 'QSER',          question: scenario.q2, answer: scenario.a2, explain: scenario.explain2 },
-    { type: 'SEC',           question: scenario.q3, answer: scenario.a3, explain: scenario.explain3 },
+    { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1, requiredCount: scenario.requiredCount1 ?? null },
+    { type: 'QSER',          question: scenario.q2, answer: scenario.a2, explain: scenario.explain2, requiredCount: scenario.requiredCount2 ?? null },
+    { type: 'SEC',           question: scenario.q3, answer: scenario.a3, explain: scenario.explain3, requiredCount: scenario.requiredCount3 ?? null },
   ]
 
   const cards = questions.map((q, i) => {
