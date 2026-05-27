@@ -11,7 +11,11 @@ const KEYS = {
   srs: 'permis_srs',
   attempts: 'permis_attempts',
   sessionsMeta: 'permis_sessions_meta',
+  wip: 'permis_wip',
+  history: 'permis_history',
 }
+
+const MAX_HISTORY = 500
 
 export const storage = {
   getApiKey: () => localStorage.getItem(KEYS.apiKey) || import.meta.env?.VITE_ANTHROPIC_API_KEY || '',
@@ -110,6 +114,88 @@ export const storage = {
 
   /** Supprime le journal de tentatives. */
   resetAttempts: () => localStorage.removeItem(KEYS.attempts),
+
+  // ─── WIP (Work In Progress — session interrompue) ─────────────────────
+
+  /**
+   * Persiste l'état en cours de session.
+   * startedAt n'est écrit qu'à la première question pour ce scénario.
+   */
+  saveWIP: (scenarioId, scores) => {
+    const existing = storage.getWIP()
+    const startedAt = (existing?.scenarioId === scenarioId && existing?.startedAt)
+      ? existing.startedAt
+      : Date.now()
+    localStorage.setItem(KEYS.wip, JSON.stringify({ scenarioId, scores, startedAt }))
+  },
+
+  getWIP: () => {
+    const raw = localStorage.getItem(KEYS.wip)
+    return raw ? JSON.parse(raw) : null
+  },
+
+  clearWIP: () => localStorage.removeItem(KEYS.wip),
+
+  // ─── History ──────────────────────────────────────────────────────────
+
+  /**
+   * Ajoute une session terminée dans l'historique.
+   * @param {{ scenarioId: string, scores: (0|1)[] }} param
+   */
+  addToHistory: ({ scenarioId, scores }) => {
+    const history = storage.getHistory()
+    history.push({
+      scenarioId,
+      q1: scores[0] ?? 0,
+      q2: scores[1] ?? 0,
+      q3: scores[2] ?? 0,
+      total: (scores[0] ?? 0) + (scores[1] ?? 0) + (scores[2] ?? 0),
+      ts: Date.now(),
+    })
+    if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY)
+    localStorage.setItem(KEYS.history, JSON.stringify(history))
+  },
+
+  getHistory: () => JSON.parse(localStorage.getItem(KEYS.history) || '[]'),
+
+  resetHistory: () => localStorage.removeItem(KEYS.history),
+
+  /**
+   * Calcule les analytics à la volée depuis l'historique.
+   * Ne persiste rien.
+   */
+  getAnalytics: () => {
+    const history = storage.getHistory()
+    if (!history.length) return null
+
+    const totalSessions = history.length
+    const totalScore = history.reduce((s, e) => s + e.total, 0)
+    const globalRate = totalScore / (totalSessions * 3)
+
+    const byQuestion = {
+      q1: { attempts: totalSessions, successes: history.filter(e => e.q1 === 1).length, rate: 0 },
+      q2: { attempts: totalSessions, successes: history.filter(e => e.q2 === 1).length, rate: 0 },
+      q3: { attempts: totalSessions, successes: history.filter(e => e.q3 === 1).length, rate: 0 },
+    }
+    for (const q of Object.values(byQuestion)) {
+      q.rate = q.attempts ? q.successes / q.attempts : 0
+    }
+
+    const byScenario = {}
+    for (const e of history) {
+      if (!byScenario[e.scenarioId]) byScenario[e.scenarioId] = { attempts: 0, totalScore: 0, lastTs: 0 }
+      byScenario[e.scenarioId].attempts++
+      byScenario[e.scenarioId].totalScore += e.total
+      byScenario[e.scenarioId].lastTs = Math.max(byScenario[e.scenarioId].lastTs, e.ts)
+    }
+    for (const s of Object.values(byScenario)) {
+      s.avgScore = s.totalScore / s.attempts
+    }
+
+    const recentTrend = history.slice(-10).map(e => ({ ts: e.ts, total: e.total }))
+
+    return { totalSessions, globalRate, byQuestion, byScenario, recentTrend }
+  },
 }
 
 // ─── Valeurs par défaut d'une entrée SRS ─────────────────────────────────

@@ -283,6 +283,232 @@
       gap: 10px;
     }
 
+    /* ─── History button ────────────────────────────────────────────────── */
+    .btn-history {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-size: .83rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .15s, border-color .15s;
+    }
+    .btn-history:hover { color: var(--text); border-color: var(--text2); }
+
+    /* ─── WIP banner ─────────────────────────────────────────────────────── */
+    .wip-banner {
+      background: rgba(99,102,241,.1);
+      border: 1px solid rgba(99,102,241,.3);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .wip-text {
+      font-size: .88rem;
+      color: var(--text);
+    }
+    .wip-text strong { color: var(--accent-h); }
+    .wip-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .wip-btn {
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: .82rem;
+      font-weight: 600;
+      padding: 7px 14px;
+    }
+    .wip-btn-resume {
+      background: var(--accent);
+      color: #fff;
+    }
+    .wip-btn-resume:hover { opacity: .88; }
+    .wip-btn-dismiss {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+    }
+    .wip-btn-dismiss:hover { color: var(--text); }
+
+    /* ─── History panel ──────────────────────────────────────────────────── */
+    .hp-topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+    .hp-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+    }
+    .hp-clear-btn {
+      background: none;
+      border: 1px solid rgba(239,68,68,.35);
+      color: var(--ko);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+    .hp-clear-btn:hover { background: rgba(239,68,68,.08); }
+
+    .hp-analytics {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hp-stat-row {
+      display: flex;
+      gap: 0;
+      justify-content: space-around;
+    }
+    .hp-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .hp-stat-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+    .hp-stat-lbl {
+      font-size: .72rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .hp-section-title {
+      font-size: .75rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .hp-qbars { display: flex; flex-direction: column; gap: 8px; }
+    .hp-qbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hp-qbar-label {
+      font-size: .78rem;
+      color: var(--text2);
+      font-weight: 600;
+      width: 44px;
+      flex-shrink: 0;
+    }
+    .hp-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .hp-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .hp-qbar-pct {
+      font-size: .78rem;
+      font-weight: 700;
+      width: 34px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .hp-trend {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 36px;
+    }
+    .hp-trend-bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      min-height: 4px;
+      cursor: default;
+    }
+
+    .hp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .hp-empty {
+      text-align: center;
+      color: var(--text2);
+      font-size: .88rem;
+      padding: 24px 0;
+    }
+    .hp-entry {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .hp-entry-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hp-entry-id {
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .hp-entry-date {
+      font-size: .72rem;
+      color: var(--text2);
+    }
+    .hp-entry-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hp-entry-qs { display: flex; gap: 4px; }
+    .hp-qicon {
+      font-size: .8rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hp-qicon-ok { background: rgba(34,197,94,.15); color: var(--ok); }
+    .hp-qicon-ko { background: rgba(239,68,68,.12); color: var(--ko); }
+    .hp-entry-score {
+      font-size: .95rem;
+      font-weight: 800;
+      min-width: 28px;
+      text-align: right;
+    }
+
     /* ─── ScoreBoard ────────────────────────────────────────────────────── */
     .scoreboard {
       background: var(--surface);
@@ -877,9 +1103,25 @@
       </p>
     </div>
 
+    <!-- WIP banner — caché par défaut, affiché si session interrompue -->
+    <div id="wip-banner" class="wip-banner hidden">
+      <span class="wip-text">Session en cours : <strong id="wip-label">–</strong></span>
+      <div class="wip-actions">
+        <button class="wip-btn wip-btn-resume" id="wip-resume">Reprendre</button>
+        <button class="wip-btn wip-btn-dismiss" id="wip-dismiss">Ignorer</button>
+      </div>
+    </div>
+
     <div id="odo-container"></div>
 
+    <button id="btn-history" class="btn-history hidden">
+      <span>📋</span> Historique
+    </button>
+
   </div>
+
+  <!-- ═══════════════════════ ÉCRAN 3 — Historique ════════════════════ -->
+  <div id="screen-history" class="screen hidden"></div>
 
   <!-- ══════════════ Sticky score bar (quiz uniquement) ═══════════════ -->
   <div id="sticky-score-bar" class="sticky-score-bar">
