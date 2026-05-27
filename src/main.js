@@ -121,6 +121,24 @@ function startSession(id) {
   container.innerHTML = ''
 
   document.getElementById('scenario-num').textContent = scenario.id
+
+  const statusBadge = document.getElementById('scenario-status-badge')
+  if (statusBadge) {
+    const SRS_STATUS = {
+      new:      { label: 'Nouveau',  cls: 'srs-new' },
+      overdue:  { label: 'À revoir', cls: 'srs-overdue' },
+      upcoming: { label: 'Planifié', cls: 'srs-upcoming' },
+      mastered: { label: 'Maîtrisé', cls: 'srs-mastered' },
+    }
+    const cfg = SRS_STATUS[engine.scenarioStatus]
+    if (cfg) {
+      statusBadge.textContent = cfg.label
+      statusBadge.className = `srs-badge ${cfg.cls}`
+    } else {
+      statusBadge.className = 'srs-badge hidden'
+    }
+  }
+
   show('quiz')
   scoreBoard.reset()
   initStickyScoreBar(scenario.id)

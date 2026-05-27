@@ -11,6 +11,7 @@ export class QuizEngine extends EventTarget {
   constructor() {
     super()
     this.scenario = null
+    this.scenarioStatus = null // 'overdue' | 'new' | 'upcoming' | 'mastered' | null
     this.scores = [null, null, null] // null | 0 | 1 pour chaque question
   }
 
@@ -48,21 +49,26 @@ export class QuizEngine extends EventTarget {
     upcoming.sort((a, b) => srsData[a.id].nextDue - srsData[b.id].nextDue)
 
     // Sélection selon priorité — aléatoire à l'intérieur d'un groupe ex-æquo
-    let selected
+    let selected, status
     if (overdue.length > 0) {
       selected = overdue[0]
+      status = 'overdue'
     } else if (neverSeen.length > 0) {
       selected = neverSeen[Math.floor(Math.random() * neverSeen.length)]
+      status = 'new'
     } else if (upcoming.length > 0) {
       selected = upcoming[0]
+      status = 'upcoming'
     } else {
       // Tous maîtrisés — révision aléatoire parmi les maîtrisés
       selected = mastered[Math.floor(Math.random() * mastered.length)]
+      status = 'mastered'
     }
 
     this.scenario = selected
+    this.scenarioStatus = status
     this.scores = [null, null, null]
-    this.dispatch('scenario-changed', { scenario: this.scenario })
+    this.dispatch('scenario-changed', { scenario: this.scenario, status: this.scenarioStatus })
     return this.scenario
   }
 
@@ -70,8 +76,9 @@ export class QuizEngine extends EventTarget {
   selectById(id) {
     this.scenario = SCENARIOS.find(s => s.id === String(id).padStart(2, '0'))
     if (!this.scenario) throw new Error(`Scénario ${id} introuvable`)
+    this.scenarioStatus = this._computeStatus(this.scenario)
     this.scores = [null, null, null]
-    this.dispatch('scenario-changed', { scenario: this.scenario })
+    this.dispatch('scenario-changed', { scenario: this.scenario, status: this.scenarioStatus })
     return this.scenario
   }
 
@@ -89,6 +96,16 @@ export class QuizEngine extends EventTarget {
 
   get isComplete() {
     return this.scores.every(s => s !== null)
+  }
+
+  /** Retourne le statut SRS d'un scénario donné. */
+  _computeStatus(scenario) {
+    const now = Date.now()
+    const entry = storage.getSRSData()[scenario.id]
+    if (!entry || entry.attempts === 0) return 'new'
+    if (entry.mastered) return 'mastered'
+    if (entry.nextDue <= now) return 'overdue'
+    return 'upcoming'
   }
 
   dispatch(type, detail = {}) {

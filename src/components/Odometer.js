@@ -4,6 +4,14 @@
  */
 
 import { SCENARIOS } from '../data/scenarios.js'
+import { storage }   from '../utils/storage.js'
+
+const SRS_STATUS = {
+  new:      { label: 'Nouveau',  cls: 'srs-new' },
+  overdue:  { label: 'À revoir', cls: 'srs-overdue' },
+  upcoming: { label: 'Planifié', cls: 'srs-upcoming' },
+  mastered: { label: 'Maîtrisé', cls: 'srs-mastered' },
+}
 
 export class Odometer {
   constructor({ container, onRoll }) {
@@ -11,6 +19,24 @@ export class Odometer {
     this.onRoll = onRoll
     this.spinning = false
     this._render()
+  }
+
+  _computeStatus(id) {
+    const now = Date.now()
+    const entry = storage.getSRSData()[id]
+    if (!entry || entry.attempts === 0) return 'new'
+    if (entry.mastered) return 'mastered'
+    if (entry.nextDue <= now) return 'overdue'
+    return 'upcoming'
+  }
+
+  _updateStatusBadge(id) {
+    const badge = this.container.querySelector('#odo-status-badge')
+    if (!badge) return
+    const status = this._computeStatus(String(id).padStart(2, '0'))
+    const cfg = SRS_STATUS[status]
+    badge.textContent = cfg.label
+    badge.className = `odo-status-badge ${cfg.cls}`
   }
 
   _render() {
@@ -27,16 +53,20 @@ export class Odometer {
           <span class="odo-digit active" id="od4">2</span>
           <span class="odo-digit active" id="od5">6</span>
         </div>
-        <p class="odo-caption">Scénario sélectionné : <strong id="odo-result">26</strong></p>
+        <div class="odo-caption-row">
+          <p class="odo-caption">Scénario sélectionné : <strong id="odo-result">26</strong></p>
+          <span id="odo-status-badge" class="odo-status-badge srs-new">Nouveau</span>
+        </div>
         <button id="btn-roll" class="qbtn qbtn-ai" style="font-size:.95rem;padding:12px 28px;gap:10px;">
           <span class="btn-icon">⟳</span>
           <span class="btn-label">Simuler le compteur</span>
         </button>
         <p class="odo-hint">L'examinateur utilise les 2 derniers chiffres du compteur pour choisir le scénario.</p>
-        <p class="odo-coverage">${SCENARIOS.length} scénarios disponibles sur 100 — les autres seront ajoutés progressivement.</p>
       </div>
     `
     this.container.querySelector('#btn-roll').addEventListener('click', () => this.roll())
+    // Afficher le statut réel du scénario par défaut (26)
+    this._updateStatusBadge(26)
   }
 
   roll() {
@@ -52,10 +82,12 @@ export class Odometer {
     const units = target % 10
 
     this._animate(['od4', 'od5'], [tens, units], 800, () => {
-      this.container.querySelector('#odo-result').textContent = String(target).padStart(2, '0')
+      const paddedId = String(target).padStart(2, '0')
+      this.container.querySelector('#odo-result').textContent = paddedId
+      this._updateStatusBadge(target)
       btn.disabled = false
       this.spinning = false
-      this.onRoll?.(String(target).padStart(2, '0'))
+      this.onRoll?.(paddedId)
     })
   }
 
