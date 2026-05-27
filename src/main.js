@@ -125,6 +125,10 @@ function startSession(id) {
   scoreBoard.reset()
   initStickyScoreBar(scenario.id)
 
+  const sessionId    = storage.getCurrentSessionId()
+  const attemptStart = Date.now()
+  const questionData = []
+
   const questions = [
     { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1, requiredCount: scenario.requiredCount1 ?? null },
     { type: 'QSER',          question: scenario.q2, answer: scenario.a2, explain: scenario.explain2, requiredCount: scenario.requiredCount2 ?? null },
@@ -136,13 +140,23 @@ function startSession(id) {
       ...q,
       index: i,
       llm,
-      onScore: (index, value) => {
+      onScore: (index, value, details = {}) => {
         engine.setScore(index, value)
         scoreBoard.update(index, value)
         updateStickyDot(index, value)
+        questionData[index] = { index, score: value, ...details }
         if (engine.isComplete) {
           storage.updateSRSEntry(engine.scenario.id, engine.total)
           const stats = storage.addSession(engine.total)
+          storage.logAttempt({
+            id:         `att_${attemptStart}_${engine.scenario.id}`,
+            scenarioId: engine.scenario.id,
+            sessionId,
+            timestamp:  attemptStart,
+            questions:  questionData,
+            totalScore: engine.total,
+            duration:   Date.now() - attemptStart,
+          })
           scoreBoard.showFinal(engine.total, stats)
         }
       },

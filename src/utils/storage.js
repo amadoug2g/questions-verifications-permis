@@ -9,6 +9,8 @@ const KEYS = {
   model: 'permis_model',
   stats: 'permis_stats',
   srs: 'permis_srs',
+  attempts: 'permis_attempts',
+  sessionsMeta: 'permis_sessions_meta',
 }
 
 export const storage = {
@@ -70,6 +72,44 @@ export const storage = {
 
   /** Supprime permis_srs sans toucher à permis_stats. */
   resetSRS: () => localStorage.removeItem(KEYS.srs),
+
+  // ─── Session detection ────────────────────────────────────────────────
+
+  /**
+   * Retourne l'ID de la session courante.
+   * Crée une nouvelle session si la dernière activité date de plus de 30 min.
+   */
+  getCurrentSessionId: () => {
+    const SESSION_TIMEOUT = 30 * 60 * 1000
+    const raw = localStorage.getItem(KEYS.sessionsMeta)
+    const meta = raw ? JSON.parse(raw) : { currentId: null, lastActivity: 0 }
+    const now = Date.now()
+    if (!meta.currentId || now - meta.lastActivity > SESSION_TIMEOUT) {
+      meta.currentId = `ses_${now}`
+    }
+    meta.lastActivity = now
+    localStorage.setItem(KEYS.sessionsMeta, JSON.stringify(meta))
+    return meta.currentId
+  },
+
+  // ─── Attempt log ──────────────────────────────────────────────────────
+
+  /**
+   * Enregistre une tentative complète (3 questions) dans le journal.
+   *
+   * @param {object} attempt — voir structure dans Opus strategy doc
+   */
+  logAttempt: (attempt) => {
+    const data = JSON.parse(localStorage.getItem(KEYS.attempts) || '{"log":[],"version":1}')
+    data.log.push(attempt)
+    localStorage.setItem(KEYS.attempts, JSON.stringify(data))
+  },
+
+  /** Lit tout le journal de tentatives. */
+  getAttempts: () => JSON.parse(localStorage.getItem(KEYS.attempts) || '{"log":[],"version":1}'),
+
+  /** Supprime le journal de tentatives. */
+  resetAttempts: () => localStorage.removeItem(KEYS.attempts),
 }
 
 // ─── Valeurs par défaut d'une entrée SRS ─────────────────────────────────
