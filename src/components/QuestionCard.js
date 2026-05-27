@@ -13,8 +13,12 @@ const TYPE_CONFIG = {
 export class QuestionCard {
   constructor(opts) {
     Object.assign(this, opts)
-    this._scored = false
-    this.element = this._build()
+    this._scored      = false
+    this._startedAt   = Date.now()
+    this._method      = null   // 'ai_eval' | 'self_reveal' | 'self_direct'
+    this._userAnswer  = ''
+    this._aiLabel     = null   // 'Correct' | 'Partiel' | 'Incorrect'
+    this.element      = this._build()
   }
 
   _build() {
@@ -104,6 +108,7 @@ export class QuestionCard {
   }
 
   _reveal() {
+    this._method = 'self_reveal'
     this._showOfficialAnswer()
     this._selfEval.classList.remove('hidden')
     this._btnReveal.disabled = true
@@ -121,6 +126,8 @@ export class QuestionCard {
       return
     }
 
+    this._method = 'ai_eval'
+    this._userAnswer = userAnswer
     this._setLoading(true)
     try {
       const result = await this.llm.evaluate({
@@ -130,6 +137,7 @@ export class QuestionCard {
         context:        this.explain || '',
         requiredCount:  this.requiredCount ?? null,
       })
+      this._aiLabel = result.label
       this._showAIResult(result)
       this._score(result.score)
     } catch (err) {
@@ -204,6 +212,7 @@ export class QuestionCard {
   _score(value) {
     if (this._scored) return
     this._scored = true
+    if (!this._method) this._method = 'self_direct'
     this._selfEval.classList.add('hidden')
     this._btnAI.disabled     = true
     this._btnReveal.disabled = true
@@ -215,6 +224,12 @@ export class QuestionCard {
 
     this.element.classList.add(value === 1 ? 'card-ok' : 'card-ko')
 
-    this.onScore?.(this.index, value)
+    this.onScore?.(this.index, value, {
+      type:         this.type,
+      method:       this._method,
+      timeToAnswer: Date.now() - this._startedAt,
+      userAnswer:   this._userAnswer,
+      aiLabel:      this._aiLabel,
+    })
   }
 }
