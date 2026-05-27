@@ -3,18 +3,20 @@
  * C'est ici qu'on orchestre, pas qu'on logique.
  */
 
-import { QuizEngine }   from './core/QuizEngine.js'
-import { LLMService }   from './core/LLMService.js'
-import { Odometer }     from './components/Odometer.js'
-import { QuestionCard } from './components/QuestionCard.js'
-import { ScoreBoard }   from './components/ScoreBoard.js'
-import { storage }      from './utils/storage.js'
+import { QuizEngine }    from './core/QuizEngine.js'
+import { LLMService }    from './core/LLMService.js'
+import { Odometer }      from './components/Odometer.js'
+import { QuestionCard }  from './components/QuestionCard.js'
+import { ScoreBoard }    from './components/ScoreBoard.js'
+import { HistoryPanel }  from './components/HistoryPanel.js'
+import { storage }       from './utils/storage.js'
 
 // ─── Éléments DOM ─────────────────────────────────────────────────────────
 
 const screens = {
-  home: document.getElementById('screen-home'),
-  quiz: document.getElementById('screen-quiz'),
+  home:    document.getElementById('screen-home'),
+  quiz:    document.getElementById('screen-quiz'),
+  history: document.getElementById('screen-history'),
 }
 
 const show = (name) => {
@@ -35,8 +37,14 @@ const odometer = new Odometer({
 
 const scoreBoard = new ScoreBoard({
   container: document.getElementById('score-container'),
-  onNewSession:   () => { show('home'); scoreBoard.reset(); hideStickyScoreBar() },
+  onNewSession:   () => { show('home'); scoreBoard.reset(); hideStickyScoreBar(); refreshHistoryBtn() },
   onNextScenario: () => { const s = engine.roll(); startSession(s.id) },
+})
+
+const historyPanel = new HistoryPanel({
+  container: document.getElementById('screen-history'),
+  storage,
+  onBack: () => show('home'),
 })
 
 // ─── Stepper (mobile navigation) ─────────────────────────────────────────
@@ -112,9 +120,48 @@ function hideStickyScoreBar() {
   if (bar) bar.classList.remove('visible')
 }
 
+// ─── History button ────────────────────────────────────────────────────────
+
+function refreshHistoryBtn() {
+  const btn = document.getElementById('btn-history')
+  if (!btn) return
+  btn.classList.toggle('hidden', storage.getHistory().length === 0)
+}
+
+document.getElementById('btn-history')?.addEventListener('click', () => {
+  historyPanel.show()
+  show('history')
+})
+
+// ─── WIP banner ────────────────────────────────────────────────────────────
+
+function checkWIP() {
+  const wip = storage.getWIP()
+  if (!wip) return
+  if (Date.now() - wip.startedAt > 24 * 60 * 60 * 1000) { storage.clearWIP(); return }
+  const answered = wip.scores.filter(s => s !== null).length
+  if (answered === 0) { storage.clearWIP(); return }
+
+  const banner = document.getElementById('wip-banner')
+  const label  = document.getElementById('wip-label')
+  if (!banner || !label) return
+  label.textContent = `Scénario ${wip.scenarioId} — ${answered}/3 répondu${answered > 1 ? 's' : ''}`
+  banner.classList.remove('hidden')
+
+  document.getElementById('wip-resume')?.addEventListener('click', () => {
+    banner.classList.add('hidden')
+    startSession(wip.scenarioId, wip.scores)
+  }, { once: true })
+
+  document.getElementById('wip-dismiss')?.addEventListener('click', () => {
+    storage.clearWIP()
+    banner.classList.add('hidden')
+  }, { once: true })
+}
+
 // ─── Session ──────────────────────────────────────────────────────────────
 
-function startSession(id) {
+function startSession(id, resumeScores = null) {
   const scenario = engine.selectById(id)
   const llm = getLLM()
   const container = document.getElementById('cards-container')
@@ -138,6 +185,9 @@ function startSession(id) {
       statusBadge.className = 'srs-badge hidden'
     }
   }
+
+  // Persist WIP immediately so a crash/close is recoverable
+  storage.saveWIP(scenario.id, [null, null, null])
 
   show('quiz')
   scoreBoard.reset()
@@ -163,7 +213,11 @@ function startSession(id) {
         scoreBoard.update(index, value)
         updateStickyDot(index, value)
         questionData[index] = { index, score: value, ...details }
+        // Persist WIP after each answer
+        storage.saveWIP(engine.scenario.id, engine.scores)
         if (engine.isComplete) {
+          storage.clearWIP()
+          storage.addToHistory({ scenarioId: engine.scenario.id, scores: engine.scores })
           storage.updateSRSEntry(engine.scenario.id, engine.total)
           const stats = storage.addSession(engine.total)
           storage.logAttempt({
@@ -190,4 +244,6 @@ document.getElementById('btn-back')?.addEventListener('click', () => { show('hom
 
 // ─── Init ─────────────────────────────────────────────────────────────────
 
+refreshHistoryBtn()
+checkWIP()
 show('home')
