@@ -2,6 +2,8 @@
  * ScoreBoard — score visuel en cours de session + récapitulatif final.
  */
 
+import { openVideoSheet } from './videoSheet.js'
+
 const LABELS = ['Q1', 'Q2', 'Q3']
 
 export class ScoreBoard {
@@ -44,7 +46,7 @@ export class ScoreBoard {
     this.container.querySelector('#sb-total').textContent = `${earned} / ${done}`
   }
 
-  showFinal(total, stats) {
+  showFinal(total, stats, videoUrl = null) {
     const pct = stats.maxScore > 0
       ? Math.round((stats.totalScore / stats.maxScore) * 100)
       : 0
@@ -74,6 +76,11 @@ export class ScoreBoard {
         <span>·</span>
         <span>${pct}% de réussite</span>
       </div>
+      ${videoUrl ? `
+      <button class="qbtn qbtn-video" id="btn-video">
+        <span class="btn-icon">▶</span>
+        <span class="btn-label">Voir la vidéo explicative</span>
+      </button>` : ''}
       <div class="sb-actions">
         <button class="qbtn qbtn-next" id="btn-next-scenario">
           → Scénario suivant
@@ -83,6 +90,10 @@ export class ScoreBoard {
         </button>
       </div>
     `
+    if (videoUrl) {
+      div.querySelector('#btn-video')
+        ?.addEventListener('click', () => openVideoSheet(videoUrl))
+    }
     div.querySelector('#btn-next-scenario')
       .addEventListener('click', () => this.onNextScenario?.())
     div.querySelector('#btn-new-session')
@@ -90,7 +101,6 @@ export class ScoreBoard {
 
     this.container.appendChild(div)
 
-    // Petite animation d'apparition
     requestAnimationFrame(() => div.classList.add('visible'))
   }
 

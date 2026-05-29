@@ -186,7 +186,6 @@ function startSession(id, resumeScores = null) {
     }
   }
 
-  // Persist WIP immediately so a crash/close is recoverable
   storage.saveWIP(scenario.id, [null, null, null])
 
   show('quiz')
@@ -213,7 +212,6 @@ function startSession(id, resumeScores = null) {
         scoreBoard.update(index, value)
         updateStickyDot(index, value)
         questionData[index] = { index, score: value, ...details }
-        // Persist WIP after each answer
         storage.saveWIP(engine.scenario.id, engine.scores)
         if (engine.isComplete) {
           storage.clearWIP()
@@ -229,7 +227,7 @@ function startSession(id, resumeScores = null) {
             totalScore: engine.total,
             duration:   Date.now() - attemptStart,
           })
-          scoreBoard.showFinal(engine.total, stats)
+          scoreBoard.showFinal(engine.total, stats, engine.scenario.video1 ?? null)
         }
       },
     })
@@ -242,13 +240,13 @@ function startSession(id, resumeScores = null) {
 
 document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
 
-// ─── Init ───────────────────────────────────────────────────────────────
+// ─── Init ──────────────────────────────────────────────────────────────────
 
 refreshHistoryBtn()
 checkWIP()
 show('home')
 
-// ─── Theme toggle ───────────────────────────────────────────────────────────────
+// ─── Theme toggle ─────────────────────────────────────────────────────
 
 const themeToggle = document.getElementById('theme-toggle')
 const applyTheme = (theme) => {
