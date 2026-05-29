@@ -10,6 +10,7 @@ import { QuestionCard }  from './components/QuestionCard.js'
 import { ScoreBoard }    from './components/ScoreBoard.js'
 import { HistoryPanel }  from './components/HistoryPanel.js'
 import { storage }       from './utils/storage.js'
+import { SCENARIOS }     from './data/scenarios.js'
 
 // ─── Éléments DOM ─────────────────────────────────────────────────────
 
@@ -186,7 +187,6 @@ function startSession(id, resumeScores = null) {
     }
   }
 
-  // Persist WIP immediately so a crash/close is recoverable
   storage.saveWIP(scenario.id, [null, null, null])
 
   show('quiz')
@@ -213,7 +213,6 @@ function startSession(id, resumeScores = null) {
         scoreBoard.update(index, value)
         updateStickyDot(index, value)
         questionData[index] = { index, score: value, ...details }
-        // Persist WIP after each answer
         storage.saveWIP(engine.scenario.id, engine.scores)
         if (engine.isComplete) {
           storage.clearWIP()
@@ -242,23 +241,9 @@ function startSession(id, resumeScores = null) {
 
 document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
 
-// ─── Init ───────────────────────────────────────────────────────────────
+// ─── Init (DEMO: patch scénario 36 + démarrage direct) ────────────────────────────
 
-refreshHistoryBtn()
-checkWIP()
-show('home')
+const _demo36 = SCENARIOS.find(s => s.id === '36')
+if (_demo36) _demo36.video1 = 'https://www.tiktok.com/@monprofdeconduite/video/7273144708438773024'
 
-// ─── Theme toggle ───────────────────────────────────────────────────────────────
-
-const themeToggle = document.getElementById('theme-toggle')
-const applyTheme = (theme) => {
-  document.documentElement.classList.toggle('light', theme === 'light')
-  if (themeToggle) themeToggle.textContent = theme === 'light' ? '☀️' : '🌙'
-}
-const savedTheme = localStorage.getItem('vp-theme') || 'dark'
-applyTheme(savedTheme)
-themeToggle?.addEventListener('click', () => {
-  const next = document.documentElement.classList.contains('light') ? 'dark' : 'light'
-  localStorage.setItem('vp-theme', next)
-  applyTheme(next)
-})
+startSession('36')
