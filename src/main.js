@@ -11,7 +11,7 @@ import { ScoreBoard }    from './components/ScoreBoard.js'
 import { HistoryPanel }  from './components/HistoryPanel.js'
 import { storage }       from './utils/storage.js'
 
-// ─── Éléments DOM ─────────────────────────────────────────────────────────
+// ─── Éléments DOM ─────────────────────────────────────────────────────
 
 const screens = {
   home:    document.getElementById('screen-home'),
@@ -24,7 +24,7 @@ const show = (name) => {
   screens[name]?.classList.remove('hidden')
 }
 
-// ─── Instanciation ────────────────────────────────────────────────────────
+// ─── Instanciation ────────────────────────────────────────────
 
 const engine = new QuizEngine()
 
@@ -47,7 +47,7 @@ const historyPanel = new HistoryPanel({
   onBack: () => show('home'),
 })
 
-// ─── Stepper (mobile navigation) ─────────────────────────────────────────
+// ─── Stepper (mobile navigation) ────────────────────────────────────────────
 
 function buildStepper(cards, container) {
   let current = 0
@@ -120,7 +120,7 @@ function hideStickyScoreBar() {
   if (bar) bar.classList.remove('visible')
 }
 
-// ─── History button ────────────────────────────────────────────────────────
+// ─── History button ──────────────────────────────────────────────────────
 
 function refreshHistoryBtn() {
   const btn = document.getElementById('btn-history')
@@ -133,7 +133,7 @@ document.getElementById('btn-history')?.addEventListener('click', () => {
   show('history')
 })
 
-// ─── WIP banner ────────────────────────────────────────────────────────────
+// ─── WIP banner ──────────────────────────────────────────────────────
 
 function checkWIP() {
   const wip = storage.getWIP()
@@ -159,7 +159,7 @@ function checkWIP() {
   }, { once: true })
 }
 
-// ─── Session ──────────────────────────────────────────────────────────────
+// ─── Session ───────────────────────────────────────────────────────────
 
 function startSession(id, resumeScores = null) {
   const scenario = engine.selectById(id)
@@ -198,7 +198,7 @@ function startSession(id, resumeScores = null) {
   const questionData = []
 
   const questions = [
-    { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1, requiredCount: scenario.requiredCount1 ?? null },
+    { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1, video: scenario.video1 ?? null, requiredCount: scenario.requiredCount1 ?? null },
     { type: 'QSER',          question: scenario.q2, answer: scenario.a2, explain: scenario.explain2, requiredCount: scenario.requiredCount2 ?? null },
     { type: 'SEC',           question: scenario.q3, answer: scenario.a3, explain: scenario.explain3, requiredCount: scenario.requiredCount3 ?? null },
   ]
@@ -242,13 +242,13 @@ function startSession(id, resumeScores = null) {
 
 document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
 
-// ─── Init ─────────────────────────────────────────────────────────────────
+// ─── Init ───────────────────────────────────────────────────────────────
 
 refreshHistoryBtn()
 checkWIP()
 show('home')
 
-// ─── Theme toggle ─────────────────────────────────────────────────────────
+// ─── Theme toggle ───────────────────────────────────────────────────────────────
 
 const themeToggle = document.getElementById('theme-toggle')
 const applyTheme = (theme) => {
