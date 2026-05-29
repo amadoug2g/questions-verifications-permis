@@ -247,3 +247,18 @@ document.getElementById('btn-back')?.addEventListener('click', () => { show('hom
 refreshHistoryBtn()
 checkWIP()
 show('home')
+
+// ─── Theme toggle ─────────────────────────────────────────────────────────
+
+const themeToggle = document.getElementById('theme-toggle')
+const applyTheme = (theme) => {
+  document.documentElement.classList.toggle('light', theme === 'light')
+  if (themeToggle) themeToggle.textContent = theme === 'light' ? '☀️' : '🌙'
+}
+const savedTheme = localStorage.getItem('vp-theme') || 'dark'
+applyTheme(savedTheme)
+themeToggle?.addEventListener('click', () => {
+  const next = document.documentElement.classList.contains('light') ? 'dark' : 'light'
+  localStorage.setItem('vp-theme', next)
+  applyTheme(next)
+})

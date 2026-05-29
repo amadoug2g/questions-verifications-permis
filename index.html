@@ -13,22 +13,42 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0d0f18;
-      --surface:  #161926;
-      --surface2: #1e2235;
-      --border:   #2a2f4a;
-      --border2:  #353c5e;
-      --text:     #e6e9f8;
-      --text2:    #9ca3c8;
-      --accent:   #6366f1;
-      --accent-h: #818cf8;
-      --ok:       #22c55e;
-      --ko:       #ef4444;
-      --warn:     #f59e0b;
-      --partial:  #a78bfa;
-      --radius:   14px;
-      --radius-sm:8px;
+      --bg:         #0d0f18;
+      --surface:    #161926;
+      --surface2:   #1e2235;
+      --border:     #2a2f4a;
+      --border2:    #353c5e;
+      --text:       #e6e9f8;
+      --text2:      #9ca3c8;
+      --accent:     #6366f1;
+      --accent-h:   #818cf8;
+      --ok:         #22c55e;
+      --ko:         #ef4444;
+      --warn:       #f59e0b;
+      --partial:    #a78bfa;
+      --radius:     14px;
+      --radius-sm:  8px;
+      --odo-digit-bg: #111520;
+      --sticky-bg:  rgba(13,15,24,.95);
       font-size: 16px;
+    }
+
+    :root.light {
+      --bg:         #f8fafc;
+      --surface:    #ffffff;
+      --surface2:   #f1f5f9;
+      --border:     #e2e8f0;
+      --border2:    #cbd5e1;
+      --text:       #1e293b;
+      --text2:      #64748b;
+      --accent:     #6366f1;
+      --accent-h:   #4f46e5;
+      --ok:         #16a34a;
+      --ko:         #dc2626;
+      --warn:       #d97706;
+      --partial:    #7c3aed;
+      --odo-digit-bg: #e2e8f0;
+      --sticky-bg:  rgba(248,250,252,.95);
     }
 
     body {
@@ -52,6 +72,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 18px 20px 0;
+      transition: background .2s;
     }
 
     .header-brand {
@@ -141,7 +162,7 @@
     }
 
     .odo-digit {
-      background: #111520;
+      background: var(--odo-digit-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       width: 52px;
@@ -202,7 +223,7 @@
       top: 0;
       z-index: 100;
       width: 100%;
-      background: rgba(13,15,24,.95);
+      background: var(--sticky-bg);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(8px);
       padding: 8px 20px;
@@ -1023,7 +1044,7 @@
         left: 0;
         right: 0;
         z-index: 200;
-        background: rgba(13, 15, 24, 0.97);
+        background: var(--sticky-bg);
         border-top: 1px solid var(--border);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
@@ -1093,6 +1114,7 @@
       <h1>Permis B</h1>
       <span class="header-pill">Questions voiture</span>
     </div>
+    <button id="theme-toggle" class="btn-history" title="Changer le thème" style="padding:7px 10px;font-size:1rem;line-height:1;">🌙</button>
   </header>
 
   <!-- ═══════════════════════ ÉCRAN 1 — Accueil ════════════════════════ -->
