@@ -301,7 +301,6 @@
     .srs-upcoming { background: rgba(167,139,250,.12); color: var(--partial);  border: 1px solid rgba(167,139,250,.3); }
     .srs-mastered { background: rgba(34,197,94,.12);   color: var(--ok);       border: 1px solid rgba(34,197,94,.3); }
 
-    /* Odometer caption row */
     .odo-caption-row {
       display: flex;
       align-items: center;
@@ -605,7 +604,6 @@
       border-left: 1px solid var(--border);
     }
 
-    /* Final result */
     .sb-final {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -841,7 +839,6 @@
     }
     .qbtn-no:hover { background: rgba(239,68,68,.22); }
 
-    /* Spinner */
     .spinner {
       width: 14px; height: 14px;
       border: 2px solid rgba(255,255,255,.3);
@@ -1000,32 +997,73 @@
       padding-left: 4px;
     }
 
-    /* ─── Video embed ──────────────────────────────────────────────────── */
-    .q-video-wrap {
-      margin-top: 12px;
-      border-radius: 12px;
+    /* ─── Bottom sheet (vidéo) ──────────────────────────────────────────── */
+    body.sheet-open { overflow: hidden; touch-action: none; }
+
+    .vsheet-backdrop {
+      position: fixed; inset: 0; z-index: 90;
+      background: rgba(0,0,0,.55);
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    .vsheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .vsheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 91;
+      background: var(--surface);
+      border-radius: 16px 16px 0 0;
+      padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+      transform: translateY(100%);
+      transition: transform .28s cubic-bezier(.32,.72,0,1);
+      max-height: 90dvh;
       overflow: hidden;
-      background: #000;
+    }
+    .vsheet.open { transform: translateY(0); }
+
+    .vsheet-grab {
+      width: 36px; height: 4px;
+      border-radius: 2px;
+      background: var(--border2);
+      margin: 4px auto 12px;
+    }
+
+    .vsheet-frame { width: 100%; background: #000; border-radius: 12px; overflow: hidden; }
+    .vsheet-frame.tiktok {
+      aspect-ratio: 9 / 16;
+      max-height: 78dvh;
+      margin-inline: auto;
+      max-width: calc(78dvh * 9 / 16);
       display: flex;
       flex-direction: column;
-      align-items: center;
     }
-    .q-video-iframe {
-      width: 100%;
-      max-width: 340px;
-      height: 600px;
-      border: none;
-      display: block;
-    }
-    .q-video-link {
+    .vsheet-frame.youtube { aspect-ratio: 16 / 9; }
+    .vsheet-frame iframe { width: 100%; height: 100%; border: 0; display: block; flex: 1; }
+
+    .vsheet-link {
       font-size: .75rem;
       color: var(--text2);
       text-decoration: none;
       padding: 8px;
       opacity: .7;
       transition: opacity .15s;
+      text-align: center;
+      display: block;
+      background: var(--surface);
     }
-    .q-video-link:hover { opacity: 1; }
+    .vsheet-link:hover { opacity: 1; }
+
+    /* Bouton vidéo dans le récapitulatif final */
+    .qbtn-video {
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.35);
+      color: var(--accent-h);
+      width: 100%;
+      justify-content: center;
+      padding: 11px;
+      font-size: .9rem;
+      border-radius: 10px;
+    }
+    .qbtn-video:hover { background: rgba(99,102,241,.22); }
 
     /* ─── Stepper nav (mobile question-by-question) ───────────────────── */
     .stepper-nav {
@@ -1062,7 +1100,6 @@
 
     /* ─── Responsive ───────────────────────────────────────────────────────── */
     @media (max-width: 767px) {
-      /* Stepper : fixé en bas (zone pouce), pas en haut */
       .stepper-nav {
         display: flex;
         position: fixed;
@@ -1078,23 +1115,19 @@
         padding-bottom: calc(12px + env(safe-area-inset-bottom));
       }
 
-      /* Agrandir les boutons Préc/Suiv pour zone tactile ≥ 44px */
       .step-btn {
         min-height: 44px;
         padding: 10px 20px;
         font-size: .9rem;
       }
 
-      /* Espace en bas du quiz pour ne pas masquer le contenu */
       #screen-quiz {
         padding-bottom: calc(80px + env(safe-area-inset-bottom));
       }
 
-      /* Une question à la fois */
       .qcard { display: none; }
       .qcard.step-active { display: block; }
 
-      /* Boutons d'action full-width, empilés */
       .q-actions {
         flex-direction: column;
       }
@@ -1105,17 +1138,13 @@
         font-size: .92rem;
       }
 
-      /* Tous les boutons ≥ 44px */
       .qbtn { min-height: 44px; padding: 11px 18px; }
       .qbtn-yes, .qbtn-no { min-height: 48px; padding: 12px 16px; font-size: .9rem; }
 
-      /* Back button ≥ 44px */
       .back-btn { min-height: 44px; padding: 10px 16px; font-size: .9rem; }
 
-      /* iOS : empêcher le zoom auto sur les champs (min 16px) */
       .q-textarea { font-size: 16px; }
 
-      /* Safe-area bas */
       body {
         padding-bottom: env(safe-area-inset-bottom);
       }
@@ -1127,7 +1156,6 @@
       .odo-digit   { width: 38px; height: 50px; }
       .screen      { padding: 16px 14px 48px; gap: 14px; }
       .qcard-body  { padding: 16px 14px 14px; gap: 12px; }
-      /* Boutons auto-éval empilés sur petit écran */
       .self-eval-btns { flex-direction: column; }
       .qbtn-yes, .qbtn-no { flex: none; width: 100%; }
     }
@@ -1143,7 +1171,6 @@
     <button id="theme-toggle" class="btn-history" title="Changer le thème" style="padding:7px 10px;font-size:1rem;line-height:1;">🌙</button>
   </header>
 
-  <!-- ═══════════════════════ ÉCRAN 1 — Accueil ════════════════════════ -->
   <div id="screen-home" class="screen">
 
     <div class="home-hero">
@@ -1155,7 +1182,6 @@
       </p>
     </div>
 
-    <!-- WIP banner — caché par défaut, affiché si session interrompue -->
     <div id="wip-banner" class="wip-banner hidden">
       <span class="wip-text">Session en cours : <strong id="wip-label">–</strong></span>
       <div class="wip-actions">
@@ -1172,10 +1198,8 @@
 
   </div>
 
-  <!-- ═══════════════════════ ÉCRAN 3 — Historique ════════════════════ -->
   <div id="screen-history" class="screen hidden"></div>
 
-  <!-- ══════════════ Sticky score bar (quiz uniquement) ═══════════════ -->
   <div id="sticky-score-bar" class="sticky-score-bar">
     <span class="sticky-scenario-label">Scénario <strong id="sticky-scenario-num">–</strong></span>
     <div class="sticky-score-dots">
@@ -1185,7 +1209,6 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════ ÉCRAN 2 — Quiz ════════════════════════ -->
   <div id="screen-quiz" class="screen hidden">
 
     <div class="quiz-topbar">
