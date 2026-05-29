@@ -3,15 +3,6 @@
  * Design revu : meilleure hiérarchie visuelle, états clairs, mock LLM.
  */
 
-function getEmbedUrl(videoUrl) {
-  if (!videoUrl) return null
-  const tt = videoUrl.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/)
-  if (tt) return `https://www.tiktok.com/embed/v2/${tt[1]}`
-  const yt = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`
-  return null
-}
-
 const TYPE_CONFIG = {
   VI:  { label: 'Vérification Intérieure', short: 'VI',   color: '#ef4444', glow: 'rgba(239,68,68,.18)' },
   VE:  { label: 'Vérification Extérieure', short: 'VE',   color: '#b91c1c', glow: 'rgba(185,28,28,.18)' },
@@ -94,27 +85,12 @@ export class QuestionCard {
             <div class="explain-body">${this.explain}</div>
           </details>` : ''}
 
-        ${this.video ? `
-          <div class="q-video-wrap hidden">
-            <iframe
-              class="q-video-iframe"
-              src="${getEmbedUrl(this.video)}"
-              allow="autoplay; encrypted-media; fullscreen"
-              allowfullscreen
-              loading="lazy"
-              frameborder="0"
-            ></iframe>
-            <a class="q-video-link" href="${this.video}" target="_blank" rel="noopener noreferrer">
-              Ouvrir la vidéo ↗
-            </a>
-          </div>` : ''}
       </div>
     `
 
     this._textarea  = el.querySelector('.q-textarea')
     this._feedback  = el.querySelector('.q-feedback')
     this._selfEval  = el.querySelector('.q-self-eval')
-    this._videoLink = el.querySelector('.q-video-wrap')
     this._btnAI     = el.querySelector('.qbtn-ai')
     this._btnReveal = el.querySelector('.qbtn-reveal')
 
@@ -139,7 +115,6 @@ export class QuestionCard {
     this._btnReveal.disabled = true
     this._btnReveal.querySelector('.btn-label').textContent = 'Réponse affichée'
     this.element.querySelector('.q-explain')?.setAttribute('open', '')
-    this._videoLink?.classList.remove('hidden')
   }
 
   async _aiEval() {
@@ -216,7 +191,6 @@ export class QuestionCard {
     `
     this._feedback.classList.remove('hidden')
     this.element.querySelector('.q-explain')?.setAttribute('open', '')
-    this._videoLink?.classList.remove('hidden')
   }
 
   _showOfficialAnswer() {

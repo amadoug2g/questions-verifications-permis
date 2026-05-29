@@ -228,7 +228,7 @@ function startSession(id, resumeScores = null) {
             totalScore: engine.total,
             duration:   Date.now() - attemptStart,
           })
-          scoreBoard.showFinal(engine.total, stats)
+          scoreBoard.showFinal(engine.total, stats, engine.scenario.video1 ?? null)
         }
       },
     })
