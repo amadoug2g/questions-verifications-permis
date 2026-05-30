@@ -15,9 +15,7 @@
  *   explain3 : explication premiers secours
  */
 
-export const SCENARIOS = [
-PLACEHOLDER_SCENARIOS
-]
+export const SCENARIOS = __SCENARIOS_ARRAY__
 
 export function getScenarioById(id) {
   return SCENARIOS.find(s => s.id === String(id).padStart(2, '0')) || null
