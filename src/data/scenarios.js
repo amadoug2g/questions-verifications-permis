@@ -16,8 +16,7 @@
  */
 
 export const SCENARIOS = [
-  {"id":"01","type1":"VI","q1":"Montrez la commande de réglage de hauteur des feux.","a1":"Dispositif situé en général à gauche du volant.","explain1":"Ce correcteur de site adapte l'angle des feux à la charge. Plus la voiture est chargée à l'arrière, plus les feux pointent vers le haut — risque d'éblouir les autres.","photo1":"correcteur-feux.jpg","q2":"Pourquoi doit-on régler la hauteur des feux ?","a2":"Pour ne pas éblouir les autres usagers.","explain2":"Un mauvais réglage réduit la visibilité des conducteurs en face. C'est aussi un point vérifié au contrôle technique.","q3":"Comment et pourquoi protéger une zone de danger en cas d'accident de la route ?","a3":"En délimitant clairement et largement la zone de danger de façon visible pour protéger les victimes et éviter un sur-accident.","explain3":"Le sur-accident est fréquent et mortel. Baliser large et tôt est la priorité AVANT les premiers secours.","video1":"https://www.tiktok.com/@monprofdeconduite/video/7305454500737764641"},
-  PLACEHOLDER_REST
+PLACEHOLDER_SCENARIOS
 ]
 
 export function getScenarioById(id) {
