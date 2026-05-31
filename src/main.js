@@ -7,9 +7,11 @@ import { QuizEngine }    from './core/QuizEngine.js'
 import { LLMService }    from './core/LLMService.js'
 import { Odometer }      from './components/Odometer.js'
 import { QuestionCard }  from './components/QuestionCard.js'
+import { ReviewCard }    from './components/ReviewCard.js'
 import { ScoreBoard }    from './components/ScoreBoard.js'
 import { HistoryPanel }  from './components/HistoryPanel.js'
 import { storage }       from './utils/storage.js'
+import { SCENARIOS }     from './data/scenarios.js'
 
 // ─── Éléments DOM ─────────────────────────────────────────────────────
 
@@ -17,6 +19,7 @@ const screens = {
   home:    document.getElementById('screen-home'),
   quiz:    document.getElementById('screen-quiz'),
   history: document.getElementById('screen-history'),
+  review:  document.getElementById('screen-review'),
 }
 
 const show = (name) => {
@@ -239,6 +242,40 @@ function startSession(id, resumeScores = null) {
 }
 
 document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
+
+// ─── Mode révision ─────────────────────────────────────────────────────
+
+document.getElementById('btn-review')?.addEventListener('click', () => show('review'))
+
+document.getElementById('btn-back-review')?.addEventListener('click', () => {
+  document.getElementById('review-cards-container').innerHTML = ''
+  document.getElementById('review-cards-container').classList.add('hidden')
+  document.getElementById('review-filter').classList.remove('hidden')
+  show('home')
+})
+
+document.getElementById('btn-start-review')?.addEventListener('click', () => {
+  const from = Math.max(1,   parseInt(document.getElementById('review-from').value) || 1)
+  const to   = Math.min(100, parseInt(document.getElementById('review-to').value)   || 100)
+
+  const filtered = SCENARIOS.filter(s => +s.id >= from && +s.id <= to)
+  if (!filtered.length) return
+
+  const questions = []
+  for (const s of filtered) {
+    questions.push({ type: s.type1, question: s.q1, answer: s.a1, explain: s.explain1, photo: s.photo1 ?? null, video: s.video1 ?? null, scenarioId: s.id })
+    questions.push({ type: 'QSER', question: s.q2, answer: s.a2, explain: s.explain2, photo: null, video: null, scenarioId: s.id })
+    questions.push({ type: 'SEC',  question: s.q3, answer: s.a3, explain: s.explain3, photo: null, video: null, scenarioId: s.id })
+  }
+
+  const container = document.getElementById('review-cards-container')
+  container.innerHTML = ''
+  const cards = questions.map(q => { const c = new ReviewCard(q); container.appendChild(c.element); return c })
+  buildStepper(cards, container)
+
+  document.getElementById('review-filter').classList.add('hidden')
+  container.classList.remove('hidden')
+})
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 

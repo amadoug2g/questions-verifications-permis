@@ -1105,6 +1105,60 @@
       .self-eval-btns { flex-direction: column; }
       .qbtn-yes, .qbtn-no { flex: none; width: 100%; }
     }
+    /* ─── Review mode ──────────────────────────────────────────── */
+    .review-filter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .review-filter-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .review-filter-sub {
+      color: var(--text2);
+      font-size: .88rem;
+      line-height: 1.55;
+    }
+    .review-range-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .review-range-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .9rem;
+      color: var(--text2);
+    }
+    .review-range-input {
+      width: 70px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 1rem;
+      padding: 7px 10px;
+      text-align: center;
+    }
+    .review-range-sep {
+      color: var(--text2);
+    }
+    .review-scenario-tag {
+      font-size: .75rem;
+      color: var(--text2);
+      font-weight: 600;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 2px 10px;
+    }
+
   </style>
 </head>
 <body>
@@ -1140,6 +1194,10 @@
 
     <div id="odo-container"></div>
 
+    <button id="btn-review" class="btn-history" style="width:100%;justify-content:center;padding:12px;">
+      <span>📖</span> Mode révision
+    </button>
+
     <button id="btn-history" class="btn-history hidden">
       <span>📋</span> Historique
     </button>
@@ -1148,6 +1206,38 @@
 
   <!-- ═══════════════════════ ÉCRAN 3 — Historique ════════════════════ -->
   <div id="screen-history" class="screen hidden"></div>
+
+  <!-- ═══════════════════════ ÉCRAN 4 — Révision ═════════════════════ -->
+  <div id="screen-review" class="screen hidden">
+    <div class="quiz-topbar">
+      <button class="back-btn" id="btn-back-review">← Accueil</button>
+      <span class="quiz-scenario-tag">Mode révision</span>
+    </div>
+
+    <div id="review-filter">
+      <div class="review-filter-card">
+        <h2 class="review-filter-title">Sélectionner les scénarios</h2>
+        <p class="review-filter-sub">Toutes les questions des scénarios sélectionnés s'afficheront une par une.</p>
+        <div class="review-range-row">
+          <label class="review-range-label">
+            De
+            <input type="number" id="review-from" class="review-range-input" min="1" max="100" value="1">
+          </label>
+          <span class="review-range-sep">—</span>
+          <label class="review-range-label">
+            À
+            <input type="number" id="review-to" class="review-range-input" min="1" max="100" value="100">
+          </label>
+        </div>
+        <button class="qbtn qbtn-ai" id="btn-start-review" style="width:100%;justify-content:center;padding:12px;margin-top:4px;">
+          <span class="btn-icon">▶</span>
+          <span class="btn-label">Commencer</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="review-cards-container" class="hidden"></div>
+  </div>
 
   <!-- ══════════════ Sticky score bar (quiz uniquement) ═══════════════ -->
   <div id="sticky-score-bar" class="sticky-score-bar">
