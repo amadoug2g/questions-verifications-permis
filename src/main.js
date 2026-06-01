@@ -7,16 +7,19 @@ import { QuizEngine }    from './core/QuizEngine.js'
 import { LLMService }    from './core/LLMService.js'
 import { Odometer }      from './components/Odometer.js'
 import { QuestionCard }  from './components/QuestionCard.js'
+import { ReviewCard }    from './components/ReviewCard.js'
 import { ScoreBoard }    from './components/ScoreBoard.js'
 import { HistoryPanel }  from './components/HistoryPanel.js'
 import { storage }       from './utils/storage.js'
+import { SCENARIOS }     from './data/scenarios.js'
 
-// ─── Éléments DOM ─────────────────────────────────────────────────────────
+// ─── Éléments DOM ─────────────────────────────────────────────────────
 
 const screens = {
   home:    document.getElementById('screen-home'),
   quiz:    document.getElementById('screen-quiz'),
   history: document.getElementById('screen-history'),
+  review:  document.getElementById('screen-review'),
 }
 
 const show = (name) => {
@@ -24,7 +27,7 @@ const show = (name) => {
   screens[name]?.classList.remove('hidden')
 }
 
-// ─── Instanciation ────────────────────────────────────────────────────────
+// ─── Instanciation ────────────────────────────────────────────
 
 const engine = new QuizEngine()
 
@@ -47,7 +50,7 @@ const historyPanel = new HistoryPanel({
   onBack: () => show('home'),
 })
 
-// ─── Stepper (mobile navigation) ─────────────────────────────────────────
+// ─── Stepper (mobile navigation) ────────────────────────────────────────────
 
 function buildStepper(cards, container) {
   let current = 0
@@ -120,7 +123,7 @@ function hideStickyScoreBar() {
   if (bar) bar.classList.remove('visible')
 }
 
-// ─── History button ────────────────────────────────────────────────────────
+// ─── History button ──────────────────────────────────────────────────────
 
 function refreshHistoryBtn() {
   const btn = document.getElementById('btn-history')
@@ -133,7 +136,7 @@ document.getElementById('btn-history')?.addEventListener('click', () => {
   show('history')
 })
 
-// ─── WIP banner ────────────────────────────────────────────────────────────
+// ─── WIP banner ──────────────────────────────────────────────────────
 
 function checkWIP() {
   const wip = storage.getWIP()
@@ -159,7 +162,7 @@ function checkWIP() {
   }, { once: true })
 }
 
-// ─── Session ──────────────────────────────────────────────────────────────
+// ─── Session ───────────────────────────────────────────────────────────
 
 function startSession(id, resumeScores = null) {
   const scenario = engine.selectById(id)
@@ -186,7 +189,6 @@ function startSession(id, resumeScores = null) {
     }
   }
 
-  // Persist WIP immediately so a crash/close is recoverable
   storage.saveWIP(scenario.id, [null, null, null])
 
   show('quiz')
@@ -198,7 +200,7 @@ function startSession(id, resumeScores = null) {
   const questionData = []
 
   const questions = [
-    { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1, requiredCount: scenario.requiredCount1 ?? null },
+    { type: scenario.type1, question: scenario.q1, answer: scenario.a1, explain: scenario.explain1, photo: scenario.photo1, video: scenario.video1 ?? null, requiredCount: scenario.requiredCount1 ?? null },
     { type: 'QSER',          question: scenario.q2, answer: scenario.a2, explain: scenario.explain2, requiredCount: scenario.requiredCount2 ?? null },
     { type: 'SEC',           question: scenario.q3, answer: scenario.a3, explain: scenario.explain3, requiredCount: scenario.requiredCount3 ?? null },
   ]
@@ -213,7 +215,6 @@ function startSession(id, resumeScores = null) {
         scoreBoard.update(index, value)
         updateStickyDot(index, value)
         questionData[index] = { index, score: value, ...details }
-        // Persist WIP after each answer
         storage.saveWIP(engine.scenario.id, engine.scores)
         if (engine.isComplete) {
           storage.clearWIP()
@@ -229,7 +230,7 @@ function startSession(id, resumeScores = null) {
             totalScore: engine.total,
             duration:   Date.now() - attemptStart,
           })
-          scoreBoard.showFinal(engine.total, stats)
+          scoreBoard.showFinal(engine.total, stats, engine.scenario.video1 ?? null)
         }
       },
     })
@@ -242,13 +243,47 @@ function startSession(id, resumeScores = null) {
 
 document.getElementById('btn-back')?.addEventListener('click', () => { show('home'); hideStickyScoreBar() })
 
-// ─── Init ─────────────────────────────────────────────────────────────────
+// ─── Mode révision ─────────────────────────────────────────────────────
+
+document.getElementById('btn-review')?.addEventListener('click', () => show('review'))
+
+document.getElementById('btn-back-review')?.addEventListener('click', () => {
+  document.getElementById('review-cards-container').innerHTML = ''
+  document.getElementById('review-cards-container').classList.add('hidden')
+  document.getElementById('review-filter').classList.remove('hidden')
+  show('home')
+})
+
+document.getElementById('btn-start-review')?.addEventListener('click', () => {
+  const from = Math.max(1,   parseInt(document.getElementById('review-from').value) || 1)
+  const to   = Math.min(100, parseInt(document.getElementById('review-to').value)   || 100)
+
+  const filtered = SCENARIOS.filter(s => +s.id >= from && +s.id <= to)
+  if (!filtered.length) return
+
+  const questions = []
+  for (const s of filtered) {
+    questions.push({ type: s.type1, question: s.q1, answer: s.a1, explain: s.explain1, photo: s.photo1 ?? null, video: s.video1 ?? null, scenarioId: s.id })
+    questions.push({ type: 'QSER', question: s.q2, answer: s.a2, explain: s.explain2, photo: null, video: null, scenarioId: s.id })
+    questions.push({ type: 'SEC',  question: s.q3, answer: s.a3, explain: s.explain3, photo: null, video: null, scenarioId: s.id })
+  }
+
+  const container = document.getElementById('review-cards-container')
+  container.innerHTML = ''
+  const cards = questions.map(q => { const c = new ReviewCard(q); container.appendChild(c.element); return c })
+  buildStepper(cards, container)
+
+  document.getElementById('review-filter').classList.add('hidden')
+  container.classList.remove('hidden')
+})
+
+// ─── Init ──────────────────────────────────────────────────────────────────
 
 refreshHistoryBtn()
 checkWIP()
 show('home')
 
-// ─── Theme toggle ─────────────────────────────────────────────────────────
+// ─── Theme toggle ─────────────────────────────────────────────────────
 
 const themeToggle = document.getElementById('theme-toggle')
 const applyTheme = (theme) => {

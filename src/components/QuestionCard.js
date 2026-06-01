@@ -84,6 +84,7 @@ export class QuestionCard {
             </summary>
             <div class="explain-body">${this.explain}</div>
           </details>` : ''}
+
       </div>
     `
 
